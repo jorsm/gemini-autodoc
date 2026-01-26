@@ -1,50 +1,59 @@
+from functools import wraps
+
+
 class DivisionByZeroError(Exception):
     """Custom exception for division by zero."""
 
     pass
 
 
+def sanitize_input(func):
+    """Decorator that checks if the inputs are valid numbers."""
+
+    @wraps(func)
+    def wrapper(a, b):
+        if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+            raise TypeError("Inputs must be numbers.")
+        return func(a, b)
+
+    return wrapper
+
+
+@sanitize_input
 def add(a, b):
     """Adds two numbers."""
-    check_input(a, b)
     return a + b
 
 
+@sanitize_input
 def subtract(a, b):
     """Subtracts two numbers."""
-    check_input(a, b)
     return a - b
 
 
+@sanitize_input
 def multiply(a, b):
     """Multiplies two numbers."""
-    check_input(a, b)
     return a * b
 
 
+@sanitize_input
 def divide(a, b):
     """Divides two numbers."""
-    check_input(a, b)
     if b == 0:
         raise DivisionByZeroError("Cannot divide by zero.")
     return a / b
 
 
+@sanitize_input
 def power(a, b):
     """Raises a to the power of b."""
-    check_input(a, b)
     return a**b
 
 
+@sanitize_input
 def modulus(a, b):
     """Returns the remainder of division."""
-    check_input(a, b)
     if b == 0:
         raise DivisionByZeroError("Cannot divide by zero.")
     return a % b
-
-
-def check_input(a, b):
-    """Checks if the input is valid."""
-    if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
-        raise TypeError("Inputs must be numbers.")
