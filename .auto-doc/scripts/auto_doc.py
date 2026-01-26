@@ -42,15 +42,21 @@ def main():
         sys.exit(1)
 
     prompt = f"""
-You are an expert technical writer. Your task is to update the documentation to match the latest source code.
-
 SOURCE CODE (src/main.py):
 {src_content}
 
 CURRENT DOCUMENTATION (docs/API.md):
 {doc_content}
+"""
 
-INSTRUCTIONS:
+    print("🤖 Auto-Doc Agent: Asking Gemini 3 (google-genai SDK) to regenerate docs...")
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        # Define the system instruction separately
+        sys_instruction = """
+You are an expert technical writer. Your task is to update the documentation to match the latest source code.
 1. Analyze the source code and identify all functions and exceptions.
 2. Rewrite the documentation to accurately reflect the source code.
 3. Ensure all parameters, return values, and raised exceptions are documented.
@@ -58,14 +64,17 @@ INSTRUCTIONS:
 5. The output must be the raw markdown content for the new file.
 """
 
-    print("🤖 Auto-Doc Agent: Asking Gemini (google-genai SDK) to regenerate docs...")
-
-    try:
-        client = genai.Client(api_key=api_key)
         response = client.models.generate_content(
-            model="gemini-2.0-flash-exp",
+            model="gemini-3-flash-preview",
             contents=prompt,
-            config=types.GenerateContentConfig(temperature=0.1),
+            config=types.GenerateContentConfig(
+                temperature=0.1,  # Keep low for documentation precision
+                system_instruction=sys_instruction,
+                thinking_config=types.ThinkingConfig(
+                    include_thoughts=False,  # We just want the doc, not the reasoning trace
+                    thinking_level="High",
+                ),
+            ),
         )
 
         new_doc_content = response.text.strip()
