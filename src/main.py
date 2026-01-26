@@ -36,6 +36,12 @@ def power(a, b):
     return a**b
 
 
+def root(a, b):
+    """Takes the root of a number."""
+    check_input(a, b)
+    return a**b
+
+
 def check_input(a, b):
     """Checks if the input is valid."""
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
