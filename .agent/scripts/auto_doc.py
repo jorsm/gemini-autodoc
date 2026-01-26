@@ -54,7 +54,7 @@ INSTRUCTIONS:
 
     try:
         process = subprocess.Popen(
-            ["gemini"],
+            ["gemini", "--model", "gemini-3.0-flash"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
