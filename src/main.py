@@ -1,3 +1,9 @@
+class DivisionByZeroError(Exception):
+    """Custom exception for division by zero."""
+
+    pass
+
+
 def add(a, b, tax=0):
     """Adds two numbers and optional tax."""
     check_input(a, b)
@@ -20,7 +26,7 @@ def divide(a, b):
     """Divides two numbers."""
     check_input(a, b)
     if b == 0:
-        raise ValueError("Cannot divide by zero.")
+        raise DivisionByZeroError("Cannot divide by zero.")
     return a / b
 
 
