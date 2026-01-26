@@ -1,64 +1,67 @@
-# Antigravity Calculator
+# Auto-Doc Template Repository
 
-A clean, robust Python library for basic mathematical operations with built-in validation and custom error handling.
+This repository demonstrates a **"Self-Writing Documentation"** workflow. using Git Hooks, Python, and the Google Gemini CLI.
+
+Whenever you commit code changes to the `src/` directory, a post-commit hook triggers a Gemini Agent to analyze the code and automatically update the documentation in `docs/API.md`.
 
 ## ✨ Features
 
-- **Robust Operations**: Supports addition, subtraction, multiplication, and division.
-- **Input Validation**: Automatically checks that inputs are numeric to prevent runtime errors.
-- **Custom Exceptions**: Specialized `DivisionByZeroError` for clearer debugging.
-- **Tax Support**: The `add` function includes an optional tax parameter for financial calculations.
+- **Zero-Touch Logic**: No need to manually run scripts. Just `git commit`.
+- **Context-Aware**: Uses your local Gemini CLI (with your API Key) to understand your code.
+- **Instant Updates**: Documentation updates happen locally, immediately after the commit.
 
-## 🚀 Getting Started
+## 🚀 Setup
 
-### Prerequisites
+### 1. Prerequisites
 
-- Python 3.6+
-
-### Installation
-
-Clone the repository and you're ready to go:
+You must have the **Gemini CLI** installed and your **API Key** configured.
 
 ```bash
-git clone https://github.com/yourusername/test-antigravity-agent.git
-cd test-antigravity-agent
+# 1. Install Gemini CLI
+npm install -g @google/gemini-cli
+
+# 2. Add your API Key to your shell profile (e.g., .zshrc or .bashrc)
+export GEMINI_API_KEY="AIzaSyYourKeyHere"
+```
+
+### 2. Install the Hook
+
+Clone this repository and run the installer script to set up the Git hooks (since hooks are not cloned by default).
+
+```bash
+git clone https://github.com/your-username/auto-doc-template.git
+cd auto-doc-template
+
+# Install the git hooks
+./install_hook.sh
 ```
 
 ## 📖 Usage
 
-Import the modules from `src/main.py` to start performing calculations:
+1.  **Modify Code**: Edit `src/main.py` (or any file in `src/`).
+2.  **Commit**:
+    ```bash
+    git add src/main.py
+    git commit -m "feat: added new magic function"
+    ```
+3.  **Watch Magic**:
+    - The hook will run automatically.
+    - You will see `🤖 Git Hook: Triggering Auto-Documentation...`.
+    - `docs/API.md` will be updated with the new documentation.
+4.  **Finalize**:
+    - Check the changes in `docs/API.md`.
+    - Stage and commit the docs:
+      ```bash
+      git add docs/API.md
+      git commit --amend --no-edit  # Or make a new commit
+      ```
 
-```python
-from src.main import add, divide
+## 📂 Structure
 
-# Simple addition with tax
-total = add(100, 20, tax=5)
-print(f"Total: {total}") # Output: 125
-
-# Safe division
-try:
-    result = divide(10, 0)
-except Exception as e:
-    print(e) # Output: Cannot divide by zero.
-```
-
-## 🛠️ Project Structure
-
-- `src/main.py`: Core logic for all mathematical operations.
-- `docs/API.md`: Detailed documentation for all functions and exceptions.
-- `.agent/`: Internal agent configurations and workflows.
-
-## � Development & Documentation
-
-This project uses an automated Documentation Sync system. When you modify code in `src/`, a git hook will remind you to update the corresponding documentation.
-
-To automatically sync documentation after making changes, you can ask the Antigravity agent:
-> "Sync my docs"
-
-## �📚 Documentation
-
-For a full list of functions and their signatures, please refer to the [API Documentation](docs/API.md).
+- `.agent/scripts/`: Contains the Python logic (`auto_doc.py`) and shell wrapper.
+- `src/`: Source code directory (watched for changes).
+- `docs/`: Documentation directory (auto-updated).
+- `install_hook.sh`: Helper script to set up the local `.git/hooks`.
 
 ---
-
-*Built with ❤️ by the Antigravity Team.*
+*Powered by Google Gemini*
