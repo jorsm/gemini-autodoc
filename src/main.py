@@ -50,12 +50,6 @@ def modulus(a, b):
     return a % b
 
 
-def square_root(a):
-    """Takes the square root of a number."""
-    check_input(a, a)
-    return a**0.5
-
-
 def check_input(a, b):
     """Checks if the input is valid."""
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
