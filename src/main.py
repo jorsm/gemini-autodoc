@@ -36,12 +36,6 @@ def power(a, b):
     return a**b
 
 
-def root(a, b):
-    """Takes the root of a number."""
-    check_input(a, b)
-    return a**b
-
-
 def modulus(a, b):
     """Returns the remainder of division."""
     check_input(a, b)
