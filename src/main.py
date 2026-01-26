@@ -4,10 +4,10 @@ class DivisionByZeroError(Exception):
     pass
 
 
-def add(a, b, tax=0):
-    """Adds two numbers and optional tax."""
+def add(a, b):
+    """Adds two numbers."""
     check_input(a, b)
-    return a + b + tax
+    return a + b
 
 
 def subtract(a, b):
