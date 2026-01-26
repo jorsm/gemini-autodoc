@@ -19,10 +19,27 @@ You must have the **Gemini CLI** installed and your **API Key** configured.
 ```bash
 # 1. Install Gemini CLI
 npm install -g @google/gemini-cli
-
-# 2. Add your API Key to your shell profile (e.g., .zshrc or .bashrc)
-export GEMINI_API_KEY="AIzaSyYourKeyHere"
 ```
+
+### Configuration
+
+Choose one of the following methods to set your API Key:
+
+- **Option A: Environment Variable (.env)**
+
+  Create a `.env` file in the root of the repo:
+
+  ```bash
+  echo 'GEMINI_API_KEY="AIzaSyYourKeyHere"' > .env
+  ```
+
+- **Option B: Shell Profile**
+
+  Add your API Key to your shell profile (e.g., `.zshrc`, `.bashrc`, `.profile`):
+
+  ```bash
+  export GEMINI_API_KEY="AIzaSyYourKeyHere"
+  ```
 
 ### 2. Install the Hook
 
@@ -38,19 +55,24 @@ cd auto-doc-template
 
 ## 📖 Usage
 
-1.  **Modify Code**: Edit `src/main.py` (or any file in `src/`).
-2.  **Commit**:
-    ```bash
-    git add src/main.py
-    git commit -m "feat: added new magic function"
-    ```
-3.  **Watch Magic**:
+1. **Modify Code**: Edit `src/main.py` (or any file in `src/`).
+
+2. **Commit**:
+
+   ```bash
+   git add src/main.py
+   git commit -m "feat: added new magic function"
+   ```
+
+3. **Watch Magic**:
     - The hook will run automatically.
     - You will see `🤖 Git Hook: Triggering Auto-Documentation...`.
     - `docs/API.md` will be updated with the new documentation.
-4.  **Finalize**:
+
+4. **Finalize**:
     - Check the changes in `docs/API.md`.
     - Stage and commit the docs:
+
       ```bash
       git add docs/API.md
       git commit --amend --no-edit  # Or make a new commit
@@ -64,4 +86,5 @@ cd auto-doc-template
 - `install_hook.sh`: Helper script to set up the local `.git/hooks`.
 
 ---
+
 *Powered by Google Gemini*
