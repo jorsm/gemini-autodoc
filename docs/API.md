@@ -7,5 +7,6 @@ All functions now include input validation using `check_input` to ensure paramet
 - **add(a, b, tax=0)**: Takes two numbers and an optional `tax` parameter, and returns their sum. Raises `TypeError` if inputs are not numbers.
 - **subtract(a, b)**: Subtracts the second number from the first. Raises `TypeError` if inputs are not numbers.
 - **multiply(a, b)**: Multiplies two numbers. Raises `TypeError` if inputs are not numbers.
-- **divide(a, b)**: Divides the first number by the second. Raises `TypeError` if inputs are not numbers or `ValueError` if dividing by zero.
+- **divide(a, b)**: Divides the first number by the second. Raises `TypeError` if inputs are not numbers or `DivisionByZeroError` if dividing by zero.
 - **check_input(a, b)**: Utility function that raises `TypeError` if `a` or `b` are not integers or floats.
+- **DivisionByZeroError**: Custom exception raised when a division by zero is attempted.
