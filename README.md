@@ -80,7 +80,7 @@ cd auto-doc-template
 
 ## 📂 Structure
 
-- `.agent/scripts/`: Contains the Python logic (`auto_doc.py`) and shell wrapper.
+- `.auto-doc/scripts/`: Contains the Python logic (`auto_doc.py`) and shell wrapper.
 - `src/`: Source code directory (watched for changes).
 - `docs/`: Documentation directory (auto-updated).
 - `install_hook.sh`: Helper script to set up the local `.git/hooks`.
