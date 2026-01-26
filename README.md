@@ -14,12 +14,10 @@ Whenever you commit code changes to the `src/` directory, a post-commit hook tri
 
 ### 1. Prerequisites
 
-You must have the **Gemini CLI** installed and your **API Key** configured.
 
-```bash
-# 1. Install Gemini CLI
-npm install -g @google/gemini-cli
-```
+You need **Python 3.x** installed. The system handles dependencies automatically via a local virtual environment.
+
+You must have your **Gemini API Key** configured.
 
 ### Configuration
 
@@ -66,7 +64,7 @@ cd auto-doc-template
 
 3. **Watch Magic**:
     - The hook will run automatically.
-    - You will see `🤖 Git Hook: Triggering Auto-Documentation...`.
+    - It uses **Gemini 3 Flash** (via the local Python agent) to analyze your code.
     - `docs/API.md` will be updated with the new documentation.
 
 4. **Finalize**:
