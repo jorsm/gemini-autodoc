@@ -30,6 +30,12 @@ def divide(a, b):
     return a / b
 
 
+def power(a, b):
+    """Raises a to the power of b."""
+    check_input(a, b)
+    return a**b
+
+
 def check_input(a, b):
     """Checks if the input is valid."""
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
