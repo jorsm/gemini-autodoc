@@ -36,5 +36,11 @@ if [ -z "$GEMINI_API_KEY" ]; then
     exit 0
 fi
 
-# Run the python script
-python3 .agent/scripts/auto_doc.py
+# Run the python script using the dedicated venv
+if [ -f .auto-doc/venv/bin/python ]; then
+    .auto-doc/venv/bin/python .auto-doc/scripts/auto_doc.py
+else
+    echo "❌ Error: Virtual environment not found at .auto-doc/venv"
+    echo "Please run install_hook.sh to set it up."
+    exit 1
+fi

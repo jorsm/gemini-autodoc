@@ -2,6 +2,9 @@ import os
 import subprocess
 import sys
 
+from google import genai
+from google.genai import types
+
 
 def run_git_command(command):
     return subprocess.check_output(command, shell=True).decode("utf-8")
@@ -19,7 +22,11 @@ def main():
 
     # Get the diff to see if relevant files changed
     diff_cmd = "git diff HEAD~1 HEAD --name-only"
-    changed_files = run_git_command(diff_cmd).splitlines()
+    try:
+        changed_files = run_git_command(diff_cmd).splitlines()
+    except Exception:
+        # Initial commit or error
+        changed_files = []
 
     # Only run if src/ changed
     if not any(f.startswith("src/") for f in changed_files):
@@ -28,6 +35,11 @@ def main():
 
     src_content = get_file_content("src/main.py")
     doc_content = get_file_content("docs/API.md")
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("❌ Error: GEMINI_API_KEY not found in environment.")
+        sys.exit(1)
 
     prompt = f"""
 You are an expert technical writer. Your task is to update the documentation to match the latest source code.
@@ -43,30 +55,20 @@ INSTRUCTIONS:
 2. Rewrite the documentation to accurately reflect the source code.
 3. Ensure all parameters, return values, and raised exceptions are documented.
 4. Keep the existing markdown structure.
-5. output ONLY the raw markdown content for the new file. Do not include markdown code fences (```markdown) or conversational text.
+5. The output must be the raw markdown content for the new file.
 """
 
-    print("🤖 Auto-Doc Agent: Asking Gemini to regenerate docs...")
-
-    # Call Gemini CLI via subprocess with the prompt passed to stdin
-    # We use --no-stream (if available) or just capture stdout
-    # Based on testing, default behavior is fine, but we might trap 'markdown' fences if the model adds them.
+    print("🤖 Auto-Doc Agent: Asking Gemini (google-genai SDK) to regenerate docs...")
 
     try:
-        process = subprocess.Popen(
-            ["gemini", "--model", "gemini-3.0-flash"],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-exp",
+            contents=prompt,
+            config=types.GenerateContentConfig(temperature=0.1),
         )
-        stdout, stderr = process.communicate(input=prompt)
 
-        if process.returncode != 0:
-            print(f"Error calling Gemini: {stderr}")
-            return
-
-        new_doc_content = stdout.strip()
+        new_doc_content = response.text.strip()
 
         # Clean up potential markdown fences if the model added them
         if new_doc_content.startswith("```"):
@@ -84,7 +86,7 @@ INSTRUCTIONS:
         print("✅ Auto-Doc Agent: Updated docs/API.md")
 
     except Exception as e:
-        print(f"Failed to run Gemini agent: {e}")
+        print(f"❌ Failed to run Gemini agent: {e}")
 
 
 if __name__ == "__main__":
