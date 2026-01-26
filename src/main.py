@@ -42,6 +42,14 @@ def root(a, b):
     return a**b
 
 
+def modulus(a, b):
+    """Returns the remainder of division."""
+    check_input(a, b)
+    if b == 0:
+        raise DivisionByZeroError("Cannot divide by zero.")
+    return a % b
+
+
 def check_input(a, b):
     """Checks if the input is valid."""
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
