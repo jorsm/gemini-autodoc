@@ -6,3 +6,13 @@ def add(a, b, tax=0):
 def subtract(a, b):
     """Subtracts two numbers."""
     return a - b
+
+
+def multiply(a, b):
+    """Multiplies two numbers."""
+    return a * b
+
+
+def divide(a, b):
+    """Divides two numbers."""
+    return a / b
