@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autodoc"
+version = "0.1.0"
+description = "AI-powered documentation generator"
+dependencies = [
+    "google-genai",
+    "GitPython",
+    "Jinja2",
+    "PyYAML"
+]
+requires-python = ">=3.8"
+
+[project.scripts]
+autodoc = "autodoc.cli:main"
+
+[tool.setuptools]
+packages = ["autodoc"]

@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: autodoc
+Version: 0.1.0
+Summary: AI-powered documentation generator
+Requires-Python: >=3.8
+Requires-Dist: google-genai
+Requires-Dist: GitPython
+Requires-Dist: Jinja2
+Requires-Dist: PyYAML

@@ -60,6 +60,14 @@ All mathematical functions use the `sanitize_input` decorator to ensure paramete
     - `TypeError`: If `a` or `b` are not numbers (int or float).
     - `DivisionByZeroError`: If `b` is zero.
 
+- **square(a)**: Returns the square of a number.
+  - **Parameters**:
+    - `a` (int or float): The number to square.
+  - **Returns**:
+    - (int or float): The result of `a` raised to the power of 2.
+  - **Raises**:
+    - `TypeError`: If `a` is not a number (int or float).
+
 - **sanitize_input(func)**: Decorator that checks if the inputs are valid numbers.
   - **Parameters**:
     - `func` (callable): The function to be decorated.

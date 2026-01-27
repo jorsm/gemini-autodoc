@@ -1,0 +1,4 @@
+source_dir: "src"
+doc_file: "docs/API.md"
+model: "gemini-3-flash-preview"
+# prompt_template: "autodoc/templates/default_prompt.j2"
