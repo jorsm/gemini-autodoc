@@ -20,7 +20,7 @@ def sanitize_input(func):
 
 
 @sanitize_input
-def add(a, b):
+def add_numbers(a, b):
     """Adds two numbers."""
     return a + b
 
