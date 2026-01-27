@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from jinja2 import Template
 
@@ -21,22 +21,21 @@ class DocGenerator:
             return
 
         # 1. Read Source
-        src_path = os.path.join(self.config.source_dir, "main.py")
-        if not os.path.exists(src_path):
+        src_path = Path(self.config.source_dir) / "main.py"
+        if not src_path.exists():
             print(f"Source file {src_path} not found.")
             return
 
-        with open(src_path, "r") as f:
-            src_content = f.read()
+        src_content = src_path.read_text(encoding="utf-8")
 
         # 2. Read Doc
+        doc_path = Path(self.config.doc_file)
         doc_content = ""
-        if os.path.exists(self.config.doc_file):
-            with open(self.config.doc_file, "r") as f:
-                doc_content = f.read()
+        if doc_path.exists():
+            doc_content = doc_path.read_text(encoding="utf-8")
 
         # 3. Build Prompt
-        prompt = self._render_prompt(src_path, src_content, doc_content)
+        prompt = self._render_prompt(str(src_path), src_content, doc_content)
 
         system_instruction = """
 You are an expert technical writer. Your task is to update the documentation to match the latest source code.
@@ -63,24 +62,23 @@ You are an expert technical writer. Your task is to update the documentation to 
                 lines = lines[:-1]
             new_doc = "\n".join(lines)
 
-        with open(self.config.doc_file, "w") as f:
-            f.write(new_doc)
+        # Ensure parent dirs exist
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+        doc_path.write_text(new_doc, encoding="utf-8")
 
         print(f"✅ Auto-Doc Agent: Updated {self.config.doc_file}")
 
     def _render_prompt(self, src_path, src_content, doc_content):
         template_str = ""
         # Check config custom template
-        if self.config.prompt_template and os.path.exists(self.config.prompt_template):
-            with open(self.config.prompt_template, "r") as f:
-                template_str = f.read()
+        if self.config.prompt_template and Path(self.config.prompt_template).exists():
+            template_str = Path(self.config.prompt_template).read_text(encoding="utf-8")
         else:
             # Fallback to internal default
             # Assuming running from repo root
-            default_tpl = "autodoc/templates/default_prompt.j2"
-            if os.path.exists(default_tpl):
-                with open(default_tpl, "r") as f:
-                    template_str = f.read()
+            default_tpl = Path("autodoc/templates/default_prompt.j2")
+            if default_tpl.exists():
+                template_str = default_tpl.read_text(encoding="utf-8")
             else:
                 template_str = """
 SOURCE CODE ({{ src_path }}):

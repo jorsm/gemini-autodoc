@@ -4,7 +4,7 @@
 
 All mathematical functions use the `sanitize_input` decorator to ensure parameters are numeric.
 
-- **add(a, b)**: Adds two numbers.
+- **add_numbers(a, b)**: Adds two numbers.
   - **Parameters**:
     - `a` (int or float): The first number.
     - `b` (int or float): The second number.

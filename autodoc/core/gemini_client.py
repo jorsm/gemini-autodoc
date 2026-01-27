@@ -17,7 +17,7 @@ class GeminiClient:
         self, prompt: str, system_instruction: str = None
     ) -> str:
         config = types.GenerateContentConfig(
-            temperature=0.1,
+            temperature=1.0,
             thinking_config=types.ThinkingConfig(include_thoughts=False),
         )
 
