@@ -57,3 +57,8 @@ def modulus(a, b):
     if b == 0:
         raise DivisionByZeroError("Cannot divide by zero.")
     return a % b
+
+
+def square(a):
+    """Returns the square of a number."""
+    return power(a, 2)
