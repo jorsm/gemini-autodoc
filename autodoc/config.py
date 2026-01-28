@@ -20,42 +20,31 @@ class Config:
     mappings: Optional[List] = None  # e.g. [{"source": "src/**", "doc": "docs/API.md"}]
 
     @classmethod
-    def load(cls, config_path: str = ".autodoc.yaml"):
-        # Default Config (Legacy Mode)
-        default_config = {
-            "source_dir": "src",
-            "doc_file": "docs/API.md",
-            "model": "gemini-3-flash-preview",
-            "context": {"files": ["README.md"]},
-            "mappings": [],
-        }
-
-        # Check legacy default config location (repo root)
-        if os.path.exists(config_path):
-            with open(config_path, "r") as f:
-                data = yaml.safe_load(f) or {}
-                default_config.update(data)
+    def load(cls, config_path: str = None):
+        # 1. Determine Config Path
+        # Priority: explicit arg -> .autodoc/config.yaml -> .autodoc.yaml (legacy)
+        if config_path and os.path.exists(config_path):
+            final_path = config_path
         elif os.path.exists(".autodoc/config.yaml"):
-            with open(".autodoc/config.yaml", "r") as f:
-                data = yaml.safe_load(f) or {}
-                default_config.update(data)
+            final_path = ".autodoc/config.yaml"
+        elif os.path.exists(".autodoc.yaml"):
+            final_path = ".autodoc.yaml"
+        else:
+            # Fallback for fresh install case (before init) or minimal usage
+            return cls(mappings=[])
 
-        # Backwards compatibility: If no mappings defined, create one from source_dir/doc_file
-        if not default_config.get("mappings"):
-            default_config["mappings"] = [
-                {
-                    "name": "Default",
-                    "source": f"{default_config['source_dir']}/**/*.py",
-                    "doc": default_config["doc_file"],
-                }
-            ]
+        # 2. Load YAML
+        with open(final_path, "r") as f:
+            data = yaml.safe_load(f) or {}
 
+        # 3. Parse Fields
         return cls(
-            repo_path=default_config.get("repo_path", "."),
-            source_dir=default_config.get("source_dir"),
-            doc_file=default_config.get("doc_file"),
-            model=default_config.get("model"),
-            prompt_template=default_config.get("prompt_template"),
-            context=default_config.get("context"),
-            mappings=default_config.get("mappings"),
+            repo_path=data.get("repo_path", "."),
+            # Legacy fallback if source_dir present but mappings not
+            source_dir=data.get("source_dir", "src"),
+            doc_file=data.get("doc_file", "docs/reference.md"),
+            model=data.get("model", "gemini-3-flash-preview"),
+            prompt_template=data.get("prompt_template"),
+            context=data.get("context", {"files": ["README.md"]}),
+            mappings=data.get("mappings"),
         )

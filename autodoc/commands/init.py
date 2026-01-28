@@ -45,3 +45,36 @@ if __name__ == "__main__":
         logger.info("✅ Hook installed successfully.")
     except Exception as e:
         logger.error(f"Failed to install hook: {e}")
+
+    # 2. Create Default Config
+    config_dir = Path(".autodoc")
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_path = config_dir / "config.yaml"
+
+    if not config_path.exists():
+        logger.info(f"Creating default config at {config_path}...")
+        config_content = """# Auto-Doc Configuration
+
+# Global Context: Files included in every prompt to provide project overview.
+context:
+  files:
+    - "README.md"
+
+# Mappings: Define which source files map to which documentation files.
+mappings:
+  - name: "Main API"
+    # Glob pattern for source files
+    source: "src/**/*.py"
+    # Target documentation file
+    doc: "docs/reference.md" 
+
+# Model Configuration
+model: "gemini-3-flash-preview"
+"""
+        try:
+            config_path.write_text(config_content, encoding="utf-8")
+            logger.info("✅ Config created successfully.")
+        except Exception as e:
+            logger.error(f"Failed to create config: {e}")
+    else:
+        logger.info(f"ℹ️  Config file already exists at {config_path}")
