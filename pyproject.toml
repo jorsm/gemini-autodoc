@@ -10,8 +10,7 @@ dependencies = [
     "google-genai",
     "GitPython",
     "Jinja2",
-    "PyYAML",
-    "python-dotenv"
+    "PyYAML"
 ]
 requires-python = ">=3.8"
 
