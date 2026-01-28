@@ -49,7 +49,7 @@ fi
 
 echo "🤖 Git Hook: Triggering Auto-Documentation..."
 # Run the CLI tool from the venv
-./.auto-doc/venv/bin/autodoc
+./.auto-doc/venv/bin/autodoc sync
 EOF
 
 chmod +x "$HOOK_PATH"
