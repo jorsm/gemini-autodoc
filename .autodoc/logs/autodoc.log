@@ -1,0 +1,3 @@
+2026-01-28 10:05:56,088 - autodoc - INFO - Starting documentation sync...
+2026-01-28 10:05:56,094 - autodoc - INFO - Changed files detected: ['install_hook.sh']
+2026-01-28 10:05:56,094 - autodoc - INFO - No changes in src, skipping doc sync.

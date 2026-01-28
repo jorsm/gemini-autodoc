@@ -2,3 +2,4 @@ google-genai
 GitPython
 Jinja2
 PyYAML
+python-dotenv
