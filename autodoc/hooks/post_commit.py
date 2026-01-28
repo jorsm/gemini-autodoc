@@ -1,13 +1,12 @@
 import os
 import sys
 
-from dotenv import load_dotenv
-
 from autodoc.commands.sync import sync_docs
+from autodoc.utils.env_loader import load_env
 from autodoc.utils.logger import setup_logger
 
 # Try loading .env from current directory
-load_dotenv()
+load_env()
 
 logger = setup_logger()
 
@@ -30,13 +29,13 @@ def main():
         logger.warning(
             "⚠️  API Key not found in Environment (GEMINI_API_KEY or GOOGLE_API_KEY)."
         )
+        logger.warning("Checked: System Environment, .env, .autodoc/.env")
         logger.warning("Please create a .env file or ensure the variable is exported.")
         logger.warning("If using a GUI Git Client, you MUST use a .env file.")
         # We exit gracefully to not block the commit
         sys.exit(0)
 
-    # Set it back to env for the details that might rely on it implicitly
-    os.environ["GEMINI_API_KEY"] = api_key
+    # Key is already in os.environ via load_env(), so Client will pick it up automatically.
 
     try:
         sync_docs()
