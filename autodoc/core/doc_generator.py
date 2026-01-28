@@ -48,7 +48,9 @@ You are an expert technical writer. Your task is to update the documentation to 
 
         print(f"🤖 Auto-Doc Agent: Asking {self.config.model} to regenerate docs...")
         try:
-            new_doc = self.client.generate_documentation(prompt, system_instruction)
+            new_doc = self.client.generate_documentation(
+                prompt, system_instruction, thinking_level=self.config.thinking_level
+            )
         except Exception:
             print("❌ Failed to generate docs.")
             return

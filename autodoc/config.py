@@ -13,6 +13,7 @@ class Config:
     doc_file: str = "docs/API.md"
 
     model: str = "gemini-3-flash-preview"
+    thinking_level: str = "high"
     prompt_template: Optional[str] = None
 
     # New Fields
@@ -44,6 +45,7 @@ class Config:
             source_dir=data.get("source_dir", "src"),
             doc_file=data.get("doc_file", "docs/reference.md"),
             model=data.get("model", "gemini-3-flash-preview"),
+            thinking_level=data.get("thinking_level", "high"),
             prompt_template=data.get("prompt_template"),
             context=data.get("context", {"files": ["README.md"]}),
             mappings=data.get("mappings"),

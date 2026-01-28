@@ -14,11 +14,14 @@ class GeminiClient:
         self.model = model
 
     def generate_documentation(
-        self, prompt: str, system_instruction: str = None
+        self, prompt: str, system_instruction: str = None, thinking_level: str = "high"
     ) -> str:
+        # thinking_level: "minimal", "low", "medium", "high"
         config = types.GenerateContentConfig(
             temperature=1.0,
-            thinking_config=types.ThinkingConfig(include_thoughts=False),
+            thinking_config=types.ThinkingConfig(
+                include_thoughts=False, thinking_level=thinking_level
+            ),
         )
 
         if system_instruction:
