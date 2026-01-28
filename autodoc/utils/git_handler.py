@@ -34,9 +34,8 @@ class GitHandler:
         try:
             diffs = self.repo.commit(base).diff(head)
             for diff in diffs:
-                if diff.change_type in ["A", "M", "R"]:
-                    if diff.b_path:
-                        files.append(diff.b_path)
+                if diff.change_type in ["A", "M", "R"] and diff.b_path:
+                    files.append(diff.b_path)
         except Exception as e:
             print(f"Git error: {e}")
             return []
