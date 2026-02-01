@@ -12,3 +12,8 @@ __pycache__/
 .autodoc/config.backup.yaml
 .autodoc/config.yaml
 
+
+# Distribution / builds
+*.egg-info/
+dist/
+build/
