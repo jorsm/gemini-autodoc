@@ -46,30 +46,74 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error(f"Failed to install hook: {e}")
 
-    # 2. Create Default Config
-    config_dir = Path(".autodoc")
-    config_dir.mkdir(parents=True, exist_ok=True)
-    config_path = config_dir / "config.yaml"
+    # 2. Create Default Templates
+    templates_dir = Path(".autodoc/templates")
+    templates_dir.mkdir(parents=True, exist_ok=True)
+
+    # A. System Instruction
+    sys_path = templates_dir / "system_instruction.j2"
+    if not sys_path.exists():
+        sys_content = """You are an expert technical writer and software engineer.
+Your task is to update or create documentation to match the latest source code.
+
+GUIDELINES:
+1.  **Accuracy**: The documentation must accurately reflect the logic, signatures, and behaviors of the source code.
+2.  **Structure**: Preserve the existing markdown structure of the documentation file unless a refactor is clearly needed.
+3.  **Clarity**: Use clear, concise language. Use code blocks for signatures and examples.
+4.  **Completeness**: Ensure all public modules, classes, functions, parameters, and return values are documented.
+5.  **Output**: Return ONLY the raw Markdown content for the file. Do not wrap in ```markdown blocks if possible, or if you do, ensure it is clean.
+"""
+        sys_path.write_text(sys_content, encoding="utf-8")
+
+    # B. Doc Prompt
+    prompt_path = templates_dir / "doc_prompt.j2"
+    if not prompt_path.exists():
+        prompt_content = """GLOBAL CONTEXT:
+{% for ctx in context_files %}
+-- {{ ctx.path }} --
+{{ ctx.content }}
+{% endfor %}
+
+SOURCE CODE (Changed Files):
+{% for src in sources %}
+-- {{ src.path }} --
+{{ src.content }}
+{% endfor %}
+
+CURRENT DOCUMENTATION ({{ doc_file }}):
+{{ doc_content }}
+
+INSTRUCTIONS:
+Update the documentation above to reflect the changes in the source code.
+"""
+        prompt_path.write_text(prompt_content, encoding="utf-8")
+
+    # 3. Create Default Config
+    config_path = Path(".autodoc/config.yaml")
 
     if not config_path.exists():
         logger.info(f"Creating default config at {config_path}...")
         config_content = """# Auto-Doc Configuration
 
-# Global Context: Files included in every prompt to provide project overview.
+# Global Context
 context:
   files:
     - "README.md"
 
-# Mappings: Define which source files map to which documentation files.
+# Mappings: source globs -> target docs
 mappings:
   - name: "Main API"
-    # Glob pattern for source files
     source: "src/**/*.py"
-    # Target documentation file
-    doc: "docs/reference.md" 
+    doc: "docs/reference.md"
+
+# Templates
+# Paths to your custom Jinja2 templates
+prompt_template: ".autodoc/templates/doc_prompt.j2"
+system_instruction_template: ".autodoc/templates/system_instruction.j2"
 
 # Model Configuration
 model: "gemini-3-flash-preview"
+thinking_level: "high"
 """
         try:
             config_path.write_text(config_content, encoding="utf-8")
@@ -78,4 +122,7 @@ model: "gemini-3-flash-preview"
             logger.error(f"Failed to create config: {e}")
     else:
         logger.info(f"ℹ️  Config file already exists at {config_path}")
+
+
+# Trigger Update
 # Trigger Update

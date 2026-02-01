@@ -54,15 +54,24 @@ class DocGenerator:
             doc_content = doc_path.read_text(encoding="utf-8")
 
         # 4. Build Prompt
-        prompt = self._render_prompt(sources, context_files, str(doc_path), doc_content)
+        prompt = self._render_template(
+            self.config.prompt_template,
+            "autodoc/templates/default_prompt.j2",
+            sources=sources,
+            context_files=context_files,
+            doc_file=doc_path,
+            doc_content=doc_content,
+        )
 
-        system_instruction = """
-You are an expert technical writer. Your task is to update the documentation to match the latest source code.
-1. Analyze the source code and global context.
-2. Rewrite or update the target documentation to accurately reflect the source code.
-3. Keep the existing markdown structure unless a refactor is clearly needed.
-4. The output must be the raw markdown content for the new file.
-"""
+        # 5. Build System Instruction
+        system_instruction = self._render_template(
+            self.config.system_instruction_template,
+            "autodoc/templates/system_instruction.j2",
+        )
+
+        # Fallback if system instruction is empty (should not happen if init works, but safety net)
+        if not system_instruction:
+            system_instruction = "You are an expert technical writer. Update the documentation to match the source code."
 
         logger.info(
             f"🤖 Auto-Doc: Updating {doc_target} using {len(sources)} source files..."
@@ -75,7 +84,7 @@ You are an expert technical writer. Your task is to update the documentation to 
             logger.error(f"❌ Failed to generate docs: {e}")
             return
 
-        # 5. Clean and Write
+        # 6. Clean and Write
         if new_doc.startswith("```"):
             lines = new_doc.splitlines()
             if lines[0].startswith("```"):
@@ -90,39 +99,28 @@ You are an expert technical writer. Your task is to update the documentation to 
 
         logger.info(f"✅ Updated {doc_target}")
 
-    def _render_prompt(self, sources, context_files, doc_path, doc_content):
+    def _render_template(self, config_path, default_path, **kwargs):
+        """
+        Loads and renders a Jinja2 template.
+        Priority: 1. Configured Path, 2. Default Internal Path.
+        """
         template_str = ""
-        # Check config custom template
-        if self.config.prompt_template and Path(self.config.prompt_template).exists():
-            template_str = Path(self.config.prompt_template).read_text(encoding="utf-8")
-        else:
-            # Fallback to internal default
-            default_tpl = Path("autodoc/templates/default_prompt.j2")
-            if default_tpl.exists():
-                template_str = default_tpl.read_text(encoding="utf-8")
-            else:
-                # Basic Fallback
-                template_str = """
-GLOBAL CONTEXT:
-{% for ctx in context_files %}
--- {{ ctx.path }} --
-{{ ctx.content }}
-{% endfor %}
 
-SOURCE CODE:
-{% for src in sources %}
--- {{ src.path }} --
-{{ src.content }}
-{% endfor %}
+        # 1. Try Configured Path
+        if config_path:
+            p = Path(config_path)
+            if p.exists():
+                template_str = p.read_text(encoding="utf-8")
 
-CURRENT DOCUMENTATION ({{ doc_file }}):
-{{ doc_content }}
-"""
+        # 2. Try Default Internal Path (if configured path missing or not set)
+        if not template_str:
+            p = Path(default_path)
+            if p.exists():
+                template_str = p.read_text(encoding="utf-8")
+
+        if not template_str:
+            logger.warning(f"⚠️  Template not found: {config_path} or {default_path}")
+            return ""
 
         t = Template(template_str)
-        return t.render(
-            sources=sources,
-            context_files=context_files,
-            doc_file=doc_path,
-            doc_content=doc_content,
-        )
+        return t.render(**kwargs)

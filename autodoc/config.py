@@ -15,6 +15,7 @@ class Config:
     model: str = "gemini-3-flash-preview"
     thinking_level: str = "high"
     prompt_template: Optional[str] = None
+    system_instruction_template: Optional[str] = None
 
     # New Fields
     context: Optional[Dict] = None  # e.g. {"files": ["README.md"]}
@@ -47,6 +48,7 @@ class Config:
             model=data.get("model", "gemini-3-flash-preview"),
             thinking_level=data.get("thinking_level", "high"),
             prompt_template=data.get("prompt_template"),
+            system_instruction_template=data.get("system_instruction_template"),
             context=data.get("context", {"files": ["README.md"]}),
             mappings=data.get("mappings"),
         )
