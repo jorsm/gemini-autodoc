@@ -1,5 +1,19 @@
-SOURCE CODE ({{ src_path }}):
-{{ src_content }}
+GLOBAL CONTEXT:
+{% for ctx in context_files %}
+-- {{ ctx.path }} --
+{{ ctx.content }}
+{% endfor %}
+
+SOURCE CODE (Changed Files):
+{% for src in sources %}
+-- {{ src.path }} --
+{{ src.content }}
+{% endfor %}
 
 CURRENT DOCUMENTATION ({{ doc_file }}):
 {{ doc_content }}
+
+INSTRUCTIONS:
+Update the documentation above to reflect the changes in the source code.
+Ensure all public APIs, classes, and functions are documented clearly.
+Return only the Markdown content.

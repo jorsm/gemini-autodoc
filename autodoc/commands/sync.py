@@ -1,3 +1,6 @@
+from collections import defaultdict
+from pathlib import Path
+
 from autodoc.config import Config
 from autodoc.core.doc_generator import DocGenerator
 from autodoc.utils.git_handler import GitHandler
@@ -6,39 +9,50 @@ from autodoc.utils.logger import setup_logger
 logger = setup_logger()
 
 
-def sync_docs(repo_path: str = "."):
-    """
-    Analyzes changes and syncs documentation.
-    """
-    logger.info("Starting documentation sync...")
-
+def sync_docs(repo_path="."):
     # Load Config
+    # If called from CLI, we might want to respect CWD or repo_path
+    # Config.load determines path automatically.
     config = Config.load()
-    if repo_path != ".":
-        config.repo_path = repo_path
+    config.repo_path = repo_path
+
+    logger.info("🤖 Auto-Doc: Analyzing changes...")
 
     git_handler = GitHandler(config.repo_path)
     changed_files = git_handler.get_changed_files()
 
-    logger.info(f"Changed files detected: {changed_files}")
-
-    # Calculate prefix for basic filtering "src/"
-    prefix = (
-        config.source_dir + "/"
-        if not config.source_dir.endswith("/")
-        else config.source_dir
-    )
-
-    # Identify relevant files
-    relevant_files = [f for f in changed_files if f.startswith(prefix)]
-
-    if not relevant_files:
-        logger.info(f"No changes in {config.source_dir}, skipping doc sync.")
+    if not changed_files:
+        logger.info("No changes detected.")
         return
 
-    logger.info(f"Processing relevant files: {relevant_files}")
+    logger.info(f"Detected changes in: {changed_files}")
 
-    # TODO: In future, pass relevant_files to run() for granular updates
-    # For now, we stick to the main.py logic but log the intent.
+    # Router Logic
+    # Map target_doc -> [list of source files]
+    doc_updates = defaultdict(list)
+
+    if config.mappings:
+        for changed_file in changed_files:
+            file_path = Path(changed_file)
+            for mapping in config.mappings:
+                source_glob = mapping.get("source")
+                target_doc = mapping.get("doc")
+
+                # Check match
+                # We use Path.match() which supports basic recursive globs
+                if file_path.match(source_glob):
+                    doc_updates[target_doc].append(changed_file)
+                    # Stop at first match (Priority Rule)
+                    break
+
+    if not doc_updates:
+        logger.info(
+            "No relevant source (src/) changes detected based on config mappings."
+        )
+        return
+
+    # Execute Updates
     generator = DocGenerator(config)
-    generator.run()
+    for doc_target, sources in doc_updates.items():
+        logger.info(f"Triggering update for {doc_target} with sources: {sources}")
+        generator.update_docs(sources, doc_target)

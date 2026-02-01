@@ -1,57 +1,34 @@
-# Auto-Doc Configuration File
-# ---------------------------
-# This file controls how the Auto-Doc Agent behaves, including which files 
-# are documented and what context is provided to the AI.
+# Auto-Doc Project Configuration
+# This is the "Self-Documentation" config for the autodoc tool itself.
 
-# -----------------------------------------------------------------------------
 # Global Context
-# -----------------------------------------------------------------------------
-# Files listed here will be included in EVERY prompt sent to the LLM.
-# Use this for high-level documentation like READMEs, Architecture diagrams (text),
-# or Style Guides to ensuring the agent mimics your project's tone.
 context:
   files:
     - "README.md"
-    # - "docs/architecture.md" 
 
-# -----------------------------------------------------------------------------
-# Mappings (File Routing)
-# -----------------------------------------------------------------------------
-# This section defines which source code updates trigger which documentation updates.
-# You can define multiple mappings to split your documentation by module.
+# Mappings
+# Mapping the tool's own source code to its documentation.
 mappings:
-  # Example 1: Main API Documentation
-  - name: "Main API"
-    # source: Glob pattern to match source files.
-    # Recursive globs (**) are supported.
-    source: "src/**/*.py"
-    
-    # doc: The target markdown file to update.
-    doc: "docs/reference.md"
+  # 1. Core Logic
+  - name: "Core Modules"
+    source: "autodoc/core/**/*.py"
+    doc: "docs/core.md"
 
-  # Example 2: Auth Module (commented out)
-  # - name: "Authentication"
-  #   source: "src/auth/**/*.py"
-  #   doc: "docs/auth.md"
+  # 2. CLI Commands
+  - name: "CLI Commands"
+    source: "autodoc/commands/**/*.py"
+    doc: "docs/commands.md"
 
-# -----------------------------------------------------------------------------
-# Model Configuration
-# -----------------------------------------------------------------------------
-# The Gemini model to use. 
-# Recommended: gemini-3-flash-preview (Fast, Large Context)
-# Alternatives: gemini-3-pro-preview (Stronger Reasoning)
+  # 3. Utilities
+  - name: "Utilities"
+    source: "autodoc/utils/**/*.py"
+    doc: "docs/utils.md"
+
+  # 4. Configuration
+  - name: "Configuration"
+    source: "autodoc/config.py"
+    doc: "docs/configuration.md"
+
+# Model
 model: "gemini-3-flash-preview"
-
-# Thinking Level (Gemini 3 Models Only)
-# Controls the depth of reasoning.
-# Options for Gemini 3 Flash: "minimal", "low", "medium", "high"
-# Options for Gemini 3 Pro: "low", "high"
-# Default: "high" (Dynamic reasoning)
 thinking_level: "high"
-
-# -----------------------------------------------------------------------------
-# Prompt Customization
-# -----------------------------------------------------------------------------
-# Path to a Jinja2 template file to override the default prompt structure.
-# If commented out, the internal default template is used.
-# prompt_template: "autodoc/templates/custom_prompt.j2"
