@@ -24,36 +24,19 @@ class DocGenerator:
             logger.error("Skipping Auto-Doc: Client not initialized (missing API Key?)")
             return
 
-        # 1. Read Source Files
-        sources = []
-        for src_file in source_files:
-            path = Path(src_file)
-            if path.exists():
-                sources.append(
-                    {"path": str(path), "content": path.read_text(encoding="utf-8")}
-                )
-
+        sources = self._read_files_with_content(source_files)
         if not sources:
             logger.warning(f"No valid source files found in: {source_files}")
             return
 
-        # 2. Read Global Context
-        context_files = []
+        context_paths = []
         if self.config.context and self.config.context.get("files"):
-            for ctx_file in self.config.context["files"]:
-                path = Path(ctx_file)
-                if path.exists():
-                    context_files.append(
-                        {"path": str(path), "content": path.read_text(encoding="utf-8")}
-                    )
+            context_paths = self.config.context["files"]
+        context_files = self._read_files_with_content(context_paths)
 
-        # 3. Read Target Doc
         doc_path = Path(doc_target)
-        doc_content = ""
-        if doc_path.exists():
-            doc_content = doc_path.read_text(encoding="utf-8")
+        doc_content = doc_path.read_text(encoding="utf-8") if doc_path.exists() else ""
 
-        # 4. Build Prompt
         prompt = self._render_template(
             self.config.prompt_template,
             "autodoc/templates/default_prompt.j2",
@@ -63,13 +46,11 @@ class DocGenerator:
             doc_content=doc_content,
         )
 
-        # 5. Build System Instruction
         system_instruction = self._render_template(
             self.config.system_instruction_template,
             "autodoc/templates/system_instruction.j2",
         )
 
-        # Fallback if system instruction is empty (should not happen if init works, but safety net)
         if not system_instruction:
             system_instruction = "You are an expert technical writer. Update the documentation to match the source code."
 
@@ -84,20 +65,32 @@ class DocGenerator:
             logger.error(f"❌ Failed to generate docs: {e}")
             return
 
-        # 6. Clean and Write
-        if new_doc.startswith("```"):
-            lines = new_doc.splitlines()
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines[-1].startswith("```"):
-                lines = lines[:-1]
-            new_doc = "\n".join(lines)
+        new_doc = self._clean_markdown_response(new_doc)
 
-        # Ensure parent dirs exist
         doc_path.parent.mkdir(parents=True, exist_ok=True)
         doc_path.write_text(new_doc, encoding="utf-8")
 
         logger.info(f"✅ Updated {doc_target}")
+
+    def _read_files_with_content(self, file_paths: list) -> list:
+        results = []
+        for f in file_paths:
+            path = Path(f)
+            if path.exists():
+                results.append(
+                    {"path": str(path), "content": path.read_text(encoding="utf-8")}
+                )
+        return results
+
+    def _clean_markdown_response(self, text: str) -> str:
+        if text.startswith("```"):
+            lines = text.splitlines()
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines[-1].startswith("```"):
+                lines = lines[:-1]
+            return "\n".join(lines)
+        return text
 
     def _render_template(self, config_path, default_path, **kwargs):
         """
