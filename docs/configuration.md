@@ -1,29 +1,27 @@
 # Configuration
 
-The documentation generation process can be customized using a configuration file. By default, the system looks for configuration in the following locations (in order of priority):
+The documentation generation process is controlled by a configuration file. By default, the system searches for configuration in the following order of priority:
 
-1. An explicit path passed via arguments.
-2. `.autodoc/config.yaml`
-3. `.autodoc.yaml` (Legacy)
+1.  An explicit path passed via the `--config` argument.
+2.  `.autodoc/config.yaml`
+3.  `.autodoc.yaml` (Legacy)
 
-If no configuration file is found, the system uses default settings with no file mappings defined.
+If no configuration file is found, the system uses internal defaults.
 
 ## Configuration Fields
 
 | Field | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `repo_path` | `str` | `"."` | The root directory of the repository. |
-| `source_dir` | `str` | `"src"` | (Legacy/Fallback) The directory containing source code to be documented. |
-| `doc_file` | `str` | `"docs/reference.md"` | (Legacy/Fallback) The target file for generated documentation. |
-| `model` | `str` | `"gemini-3-flash-preview"` | The Gemini model version to use for analysis. |
+| `model` | `str` | `"gemini-3-flash-preview"` | The Gemini model version used for code analysis. |
 | `thinking_level` | `str` | `"high"` | The reasoning intensity for the model. |
-| `prompt_template` | `str` | `None` | Optional path or string for a custom prompt. |
-| `system_instruction_template` | `str` | `None` | Optional path or string for a custom system instruction. |
-| `context` | `dict` | `{"files": ["README.md"]}` | Global context provided to the model for better understanding of the project. |
-| `mappings` | `list` | `None` | A list of source-to-documentation mappings. |
+| `prompt_template` | `str` | `None` | Path to a custom Jinja2 template for the model prompt. |
+| `system_instruction_template` | `str` | `None` | Path to a custom Jinja2 template for the system instructions. |
+| `context` | `dict` | `{"files": ["README.md"]}` | Global files provided to the model to establish project-wide context. |
+| `mappings` | `list` | `None` | A list of source-to-documentation mapping objects. |
 
-### Advanced Context
-The `context` field allows you to specify files that the Gemini Agent should read to understand the project's purpose and style before documenting specific source files. 
+### Global Context
+The `context` field allows you to specify files that the Gemini Agent should ingest to understand the project's architecture, naming conventions, and style before it documents specific source files.
 
 **Example:**
 ```yaml
@@ -34,43 +32,64 @@ context:
 ```
 
 ### Mappings
-The `mappings` field is the modern way to define which source files trigger updates to specific documentation files.
+The `mappings` field defines which source files are analyzed and which documentation files they update. Each mapping entry supports the following properties:
+
+*   `name`: (Optional) A descriptive label for the mapping.
+*   `source`: A glob pattern matching the source files to watch.
+*   `doc`: The target Markdown file to be updated.
 
 **Example:**
 ```yaml
 mappings:
-  - source: "src/**"
-    doc: "docs/API.md"
-  - source: "internal/utils/*.py"
-    doc: "docs/internals.md"
+  - name: "Core Logic"
+    source: "src/core/*.py"
+    doc: "docs/core.md"
+  - name: "API Layer"
+    source: "src/api/**/*.py"
+    doc: "docs/api_reference.md"
 ```
 
 ## Example Configuration File
 
-Create a file at `.autodoc/config.yaml` to customize the behavior:
+This is a representative `.autodoc/config.yaml` showing how to map different modules to specific documentation files:
 
 ```yaml
 # .autodoc/config.yaml
-model: "gemini-3-flash-preview"
-thinking_level: "high"
 
+# Global Context
 context:
   files:
     - "README.md"
 
+# Mappings
 mappings:
-  - source: "src/api/*.py"
-    doc: "docs/API.md"
-  - source: "src/core/*.py"
-    doc: "docs/CORE.md"
+  - name: "Core Modules"
+    source: "autodoc/core/*.py"
+    doc: "docs/core.md"
+
+  - name: "CLI Commands"
+    source: "autodoc/commands/*.py"
+    doc: "docs/commands.md"
+
+  - name: "Configuration"
+    source: "autodoc/config.py"
+    doc: "docs/configuration.md"
+
+# Templates
+prompt_template: ".autodoc/templates/doc_prompt.j2"
+system_instruction_template: ".autodoc/templates/system_instruction.j2"
+
+# Model Settings
+model: "gemini-3-flash-preview"
+thinking_level: "high"
 ```
 
 ## Programmatic Usage
 
 ### `Config` Class
-The `Config` class is a Python dataclass used to represent the current configuration state.
+The `Config` class is a Python dataclass that represents the configuration state.
 
 #### `Config.load(config_path: str = None) -> Config`
-A class method that resolves and loads the configuration file.
+A class method that resolves and loads the configuration file into a `Config` object.
 - **Parameters**: `config_path` (Optional) – An explicit path to a YAML configuration file.
-- **Returns**: An instance of the `Config` class.
+- **Returns**: An instance of the `Config` class populated with file or default values.

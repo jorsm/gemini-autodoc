@@ -50,8 +50,14 @@ model: "gemini-3-flash-preview"
 thinking_level: "high"
 
 # -----------------------------------------------------------------------------
-# Prompt Customization
+# Template Configuration
 # -----------------------------------------------------------------------------
-# Path to a Jinja2 template file to override the default prompt structure.
-# If commented out, the internal default template is used.
-# prompt_template: "autodoc/templates/custom_prompt.j2"
+# You can override the default Jinja2 templates used by the agent.
+# Paths should be relative to the project root.
+
+# 1. Prompt Template: Controls the structure of the request sent to the LLM.
+#    Variables: {{ sources }}, {{ context_files }}, {{ doc_file }}, {{ doc_content }}
+# prompt_template: ".autodoc/templates/doc_prompt.j2"
+
+# 2. System Instruction: Defines the persona and rulebook for the agent.
+# system_instruction_template: ".autodoc/templates/system_instruction.j2"

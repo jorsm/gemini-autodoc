@@ -29,10 +29,10 @@ mappings:
     source: "autodoc/config.py"
     doc: "docs/configuration.md"
 
-  # 5. Project Config (Self-Doc)
+  # 5. Project Config Reference
   - name: "Project Config"
-    source: ".autodoc/config.yaml"
-    doc: "docs/configuration.md"
+    source: ".autodoc/config.sample.yaml"
+    doc: "docs/config_file.md"
 
   # 6. Templates
   - name: "Templates"
