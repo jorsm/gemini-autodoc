@@ -33,15 +33,17 @@ The core synchronization engine that analyzes recent repository changes and trig
 - **`repo_path`** (string): The path to the repository root. Defaults to the current directory (`"."`).
 
 ### Workflow
-1. **Configuration Loading**: Initializes settings from `.autodoc/config.yaml`, determining mapping rules and model parameters.
-2. **Change Detection**: Uses a `GitHandler` to identify files that have been modified in the latest commit.
+1. **Configuration Loading**: Initializes settings from `.autodoc/config.yaml`. It sets the active repository path for the session.
+2. **Change Detection**: Uses a `GitHandler` to identify files that have been modified in the latest commit. If no changes are detected, the process terminates.
 3. **Mapping & Routing**:
-    - Iterates through detected changes and matches them against `source` glob patterns defined in the configuration.
-    - Resolves absolute paths to ensure accurate pattern matching using `Path.match`.
-    - Groups changed source files by their respective target documentation (`doc`) file.
-    - **Priority Rule**: Only the first matching mapping for a file is processed.
+    - Iterates through detected changes and matches them against `source` glob patterns defined in the configuration mappings.
+    - **Exclusion Logic**: For each mapping, the engine checks an optional `exclude` list. If a changed file matches an exclusion pattern, the engine skips that mapping and continues to evaluate the next one.
+    - **Resolution**: Resolves absolute paths for both source and exclusion patterns to ensure accurate matching using `Path.match`.
+    - **Grouping**: Groups changed source files by their respective target documentation (`doc`) file.
+    - **Priority Rule**: Only the first matching (and non-excluded) mapping for a file is processed.
 4. **AI-Driven Update**: For each target documentation file identified, it invokes the `DocGenerator`. The generator uses the configured Jinja2 templates and the Gemini API to rewrite the documentation based on the new source code logic.
 
 ### Logic Constraints
-- If no files have changed according to Git, the process terminates without action.
-- Only files matching the `source` globs defined in `config.yaml` will trigger an update. Files outside these patterns are ignored.
+- **Empty Commits**: If no files have changed according to Git, the process terminates without action.
+- **Mapping Coverage**: Only files matching the `source` globs (and not matching `exclude` globs) defined in `config.yaml` will trigger an update. Files outside these patterns are ignored.
+- **Logging**: The process provides real-time feedback on detected changes and triggered updates via the internal logger.
