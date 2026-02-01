@@ -6,3 +6,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Auto-Doc
+.autodoc/logs
+.autodoc/config.yaml
+
