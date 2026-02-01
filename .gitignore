@@ -9,5 +9,6 @@ __pycache__/
 
 # Auto-Doc
 .autodoc/logs
+.autodoc/config.backup.yaml
 .autodoc/config.yaml
 
