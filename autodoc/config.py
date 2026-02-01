@@ -8,9 +8,6 @@ import yaml
 @dataclass
 class Config:
     repo_path: str = "."
-    # Legacy / Default fallback
-    source_dir: str = "src"
-    doc_file: str = "docs/reference.md"
 
     model: str = "gemini-3-flash-preview"
     thinking_level: str = "high"
