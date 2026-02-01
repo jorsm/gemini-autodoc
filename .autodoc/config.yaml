@@ -29,6 +29,16 @@ mappings:
     source: "autodoc/config.py"
     doc: "docs/configuration.md"
 
+  # 5. Project Config (Self-Doc)
+  - name: "Project Config"
+    source: ".autodoc/config.yaml"
+    doc: "docs/configuration.md"
+
+  # 6. Templates
+  - name: "Templates"
+    source: ".autodoc/templates/*.j2"
+    doc: "docs/templates.md"
+
 # Templates
 # Paths to your custom Jinja2 templates
 prompt_template: ".autodoc/templates/doc_prompt.j2"
