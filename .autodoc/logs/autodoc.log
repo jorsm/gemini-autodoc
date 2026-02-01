@@ -10,3 +10,17 @@
 2026-02-01 16:42:28,888 - autodoc - INFO - 🤖 Auto-Doc: Analyzing changes...
 2026-02-01 16:42:28,902 - autodoc - INFO - Detected changes in: ['.autodoc/config.sample.yaml', '.autodoc/config.yaml', 'autodoc/commands/sync.py', 'autodoc/core/doc_generator.py', 'autodoc/templates/default_prompt.j2', 'docs/commands.md', 'docs/configuration.md', 'docs/core.md', 'docs/utils.md']
 2026-02-01 16:42:28,903 - autodoc - INFO - No relevant source (src/) changes detected based on config mappings.
+2026-02-01 17:32:38,475 - autodoc - INFO - 🤖 Auto-Doc Hook Triggered
+2026-02-01 17:32:38,477 - autodoc - INFO - 🤖 Auto-Doc: Analyzing changes...
+2026-02-01 17:32:38,490 - autodoc - INFO - Detected changes in: ['.autodoc/logs/autodoc.log', '.vscode/mcp.json', 'autodoc/commands/sync.py']
+2026-02-01 17:32:38,491 - autodoc - INFO - No relevant source (src/) changes detected based on config mappings.
+2026-02-01 17:34:48,762 - autodoc - INFO - 🤖 Auto-Doc Hook Triggered
+2026-02-01 17:34:48,765 - autodoc - INFO - 🤖 Auto-Doc: Analyzing changes...
+2026-02-01 17:34:48,775 - autodoc - INFO - Detected changes in: ['.autodoc/config.yaml']
+2026-02-01 17:34:48,776 - autodoc - INFO - No relevant source (src/) changes detected based on config mappings.
+2026-02-01 17:36:46,036 - autodoc - INFO - 🤖 Auto-Doc Hook Triggered
+2026-02-01 17:36:46,038 - autodoc - INFO - 🤖 Auto-Doc: Analyzing changes...
+2026-02-01 17:36:46,050 - autodoc - INFO - Detected changes in: ['autodoc/core/doc_generator.py']
+2026-02-01 17:36:46,108 - autodoc - INFO - Triggering update for docs/core.md with sources: ['autodoc/core/doc_generator.py']
+2026-02-01 17:36:46,115 - autodoc - INFO - 🤖 Auto-Doc: Updating docs/core.md using 1 source files...
+2026-02-01 17:36:55,290 - autodoc - INFO - ✅ Updated docs/core.md

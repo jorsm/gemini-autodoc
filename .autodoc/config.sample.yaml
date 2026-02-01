@@ -17,16 +17,16 @@ context:
 # -----------------------------------------------------------------------------
 # Mappings (File Routing)
 # -----------------------------------------------------------------------------
-# This section defines which source code updates trigger which documentation updates.
-# You can define multiple mappings to split your documentation by module.
+# Mappings: Define which source files map to which documentation files.
 mappings:
   # Example 1: Main API Documentation
   - name: "Main API"
-    # source: Glob pattern to match source files.
-    # Recursive globs (**) are supported.
+    # Source Pattern (Glob):
+    # - Supports standard shell-style wildcards (*, ?, [seq], [!seq])
+    # - Supports recursive matching with ** (e.g. src/**/*.py)
+    # - Patterns are matched against the repository root.
     source: "src/**/*.py"
-    
-    # doc: The target markdown file to update.
+    # Target documentation file
     doc: "docs/reference.md"
 
   # Example 2: Auth Module (commented out)

@@ -78,3 +78,4 @@ model: "gemini-3-flash-preview"
             logger.error(f"Failed to create config: {e}")
     else:
         logger.info(f"ℹ️  Config file already exists at {config_path}")
+# Trigger Update
