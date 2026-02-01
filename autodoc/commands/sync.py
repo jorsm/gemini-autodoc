@@ -49,6 +49,18 @@ def sync_docs(repo_path="."):
 
                 # Use Path.match on the full path
                 if full_file_path.match(abs_glob):
+                    # CHECK EXCLUSIONS
+                    excludes = mapping.get("exclude", [])
+                    is_excluded = False
+                    for exc in excludes:
+                        abs_exc = f"{repo_root}/{exc}"
+                        if full_file_path.match(abs_exc):
+                            is_excluded = True
+                            break
+
+                    if is_excluded:
+                        continue
+
                     doc_updates[target_doc].append(changed_file)
                     # Stop at first match (Priority Rule)
                     break

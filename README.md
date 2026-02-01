@@ -88,11 +88,12 @@ Auto-Doc requires a Google Gemini API Key.
     context:
       files: ["README.md"]
 
-    # File Routing (glob -> doc)
     mappings:
       - name: "API Docs"
         source: "src/**/*.py"
-        doc: "docs/api.md"
+        target: "docs/api.md"
+        # Optional: Exclude files
+        # exclude: ["src/tests/**"]
 
     # AI Config
     model: "gemini-3-flash-preview"

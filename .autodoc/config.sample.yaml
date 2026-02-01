@@ -22,12 +22,14 @@ mappings:
   # Example 1: Main API Documentation
   - name: "Main API"
     # Source Pattern (Glob):
-    # - Supports standard shell-style wildcards (*, ?, [seq], [!seq])
     # - Supports recursive matching with ** (e.g. src/**/*.py)
     # - Patterns are matched against the repository root.
     source: "src/**/*.py"
     # Target documentation file
     doc: "docs/reference.md"
+    # Optional: Exclude files
+    # exclude: 
+    #   - "src/tests/**"
 
   # Example 2: Auth Module (commented out)
   # - name: "Authentication"
