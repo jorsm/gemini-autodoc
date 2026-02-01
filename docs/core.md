@@ -13,7 +13,7 @@ DocGenerator(config: Config)
 ```
 
 - **config**: An instance of `autodoc.config.Config` containing model settings, context file paths, and template configurations.
-- The constructor initializes the `GeminiClient`. If the API key is missing or invalid, it logs a warning and disables generation.
+- The constructor initializes the `GeminiClient` using the model specified in the configuration. If the API key is missing or invalid, it logs a warning and disables generation.
 
 ### Public Methods
 
@@ -30,23 +30,24 @@ def update_docs(self, source_files: list, doc_target: str):
 
 **Process Flow:**
 1.  **Validation**: Checks if the AI client is initialized.
-2.  **Context Gathering**: Reads the content of the modified source files and any "global context" files defined in the configuration.
-3.  **State Analysis**: Reads the current content of the `doc_target` to allow for incremental updates.
-4.  **Prompt Rendering**: Combines source code, context, and current documentation into a prompt using the `_render_prompt` method.
-5.  **AI Generation**: Sends the prompt to the Gemini API with a specialized "Expert Technical Writer" system instruction.
-6.  **Post-Processing**: Strips markdown code blocks (backticks) from the AI's response to ensure clean file output.
-7.  **File Write**: Ensures the target directory exists and writes the updated content to disk.
+2.  **Source Gathering**: Reads the content of the modified source files.
+3.  **Global Context**: Reads content from additional context files specified in `config.context["files"]`.
+4.  **State Analysis**: Reads the current content of the `doc_target` to allow for incremental updates.
+5.  **Prompt & System Instruction Construction**: Uses the internal `_render_template` method to build the prompt and the system instructions.
+6.  **AI Generation**: Sends the data to the Gemini API, passing the `thinking_level` defined in the configuration.
+7.  **Post-Processing**: Strips markdown code blocks (backticks) from the AI's response to ensure only raw markdown is saved.
+8.  **File Write**: Ensures the target directory exists and writes the updated content to disk.
 
 ### Internal Logic
 
-#### Prompt Rendering
-The generator uses **Jinja2** templates to construct prompts. It follows a specific priority for templates:
-1.  Custom template path defined in `config.prompt_template`.
-2.  Internal default template at `autodoc/templates/default_prompt.j2`.
-3.  A hardcoded fallback string if no files are found.
+#### Template Rendering (`_render_template`)
+The generator uses **Jinja2** templates to construct both the user prompt and the system instruction. It follows a specific priority for resolving template files:
+1.  **Configured Path**: Uses the path defined in the configuration (e.g., `config.prompt_template`).
+2.  **Default Internal Path**: If no custom path is provided or the file is missing, it falls back to internal defaults (e.g., `autodoc/templates/default_prompt.j2` or `autodoc/templates/system_instruction.j2`).
 
 #### System Instruction
-The generator provides a strict system instruction to the AI model to ensure:
+The system instruction is dynamically rendered from a template. It defines the AI's persona as an expert technical writer and provides constraints to ensure:
 - Accurate reflection of the source code.
 - Preservation of existing markdown structures.
 - Return of raw markdown content only.
+- A hardcoded fallback instruction is provided if no template files are found.

@@ -33,3 +33,18 @@
 2026-02-01 17:41:36,622 - autodoc - INFO - Triggering update for docs/utils.md with sources: ['autodoc/utils/git_handler.py', 'autodoc/utils/logger.py']
 2026-02-01 17:41:36,626 - autodoc - INFO - 🤖 Auto-Doc: Updating docs/utils.md using 2 source files...
 2026-02-01 17:41:42,984 - autodoc - INFO - ✅ Updated docs/utils.md
+2026-02-01 17:54:18,486 - autodoc - INFO - 🤖 Auto-Doc Hook Triggered
+2026-02-01 17:54:18,488 - autodoc - INFO - 🤖 Auto-Doc: Analyzing changes...
+2026-02-01 17:54:18,503 - autodoc - INFO - Detected changes in: ['.autodoc/logs/autodoc.log', 'autodoc/commands/init.py', 'autodoc/config.py', 'autodoc/core/doc_generator.py', 'docs/commands.md', 'docs/utils.md']
+2026-02-01 17:54:18,553 - autodoc - INFO - Triggering update for docs/commands.md with sources: ['autodoc/commands/init.py']
+2026-02-01 17:54:18,559 - autodoc - WARNING - ⚠️  Template not found: None or autodoc/templates/system_instruction.j2
+2026-02-01 17:54:18,560 - autodoc - INFO - 🤖 Auto-Doc: Updating docs/commands.md using 1 source files...
+2026-02-01 17:54:26,224 - autodoc - INFO - ✅ Updated docs/commands.md
+2026-02-01 17:54:26,224 - autodoc - INFO - Triggering update for docs/configuration.md with sources: ['autodoc/config.py']
+2026-02-01 17:54:26,227 - autodoc - WARNING - ⚠️  Template not found: None or autodoc/templates/system_instruction.j2
+2026-02-01 17:54:26,227 - autodoc - INFO - 🤖 Auto-Doc: Updating docs/configuration.md using 1 source files...
+2026-02-01 17:54:33,550 - autodoc - INFO - ✅ Updated docs/configuration.md
+2026-02-01 17:54:33,551 - autodoc - INFO - Triggering update for docs/core.md with sources: ['autodoc/core/doc_generator.py']
+2026-02-01 17:54:33,553 - autodoc - WARNING - ⚠️  Template not found: None or autodoc/templates/system_instruction.j2
+2026-02-01 17:54:33,553 - autodoc - INFO - 🤖 Auto-Doc: Updating docs/core.md using 1 source files...
+2026-02-01 17:54:41,765 - autodoc - INFO - ✅ Updated docs/core.md
