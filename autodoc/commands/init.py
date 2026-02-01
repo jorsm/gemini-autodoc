@@ -124,5 +124,3 @@ thinking_level: "high"
         logger.info(f"ℹ️  Config file already exists at {config_path}")
 
 
-# Trigger Update
-# Trigger Update

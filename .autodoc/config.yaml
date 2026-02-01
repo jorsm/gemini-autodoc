@@ -29,6 +29,13 @@ mappings:
     source: "autodoc/config.py"
     doc: "docs/configuration.md"
 
+# Templates
+# Paths to your custom Jinja2 templates
+prompt_template: ".autodoc/templates/doc_prompt.j2"
+system_instruction_template: ".autodoc/templates/system_instruction.j2"
+
+# -----------------------------------------------------------------------------
+
 # Model
 model: "gemini-3-flash-preview"
 thinking_level: "high"
