@@ -6,3 +6,7 @@
 2026-01-28 10:20:50,855 - autodoc - INFO - No changes in src, skipping doc sync.
 2026-01-28 10:37:33,076 - autodoc - INFO - Installing post-commit hook to .git/hooks/post-commit...
 2026-01-28 10:37:33,077 - autodoc - INFO - ✅ Hook installed successfully.
+2026-02-01 16:42:28,885 - autodoc - INFO - 🤖 Auto-Doc Hook Triggered
+2026-02-01 16:42:28,888 - autodoc - INFO - 🤖 Auto-Doc: Analyzing changes...
+2026-02-01 16:42:28,902 - autodoc - INFO - Detected changes in: ['.autodoc/config.sample.yaml', '.autodoc/config.yaml', 'autodoc/commands/sync.py', 'autodoc/core/doc_generator.py', 'autodoc/templates/default_prompt.j2', 'docs/commands.md', 'docs/configuration.md', 'docs/core.md', 'docs/utils.md']
+2026-02-01 16:42:28,903 - autodoc - INFO - No relevant source (src/) changes detected based on config mappings.

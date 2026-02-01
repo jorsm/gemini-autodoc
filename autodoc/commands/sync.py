@@ -32,15 +32,23 @@ def sync_docs(repo_path="."):
     doc_updates = defaultdict(list)
 
     if config.mappings:
+        repo_root = Path(config.repo_path).resolve()
+
         for changed_file in changed_files:
-            file_path = Path(changed_file)
+            # changed_file is relative to repo root (e.g. "src/main.py")
+            # Create full path for matching
+            full_file_path = repo_root / changed_file
+
             for mapping in config.mappings:
                 source_glob = mapping.get("source")
                 target_doc = mapping.get("doc")
 
-                # Check match
-                # We use Path.match() which supports basic recursive globs
-                if file_path.match(source_glob):
+                # Construct absolute glob pattern
+                # We assume source_glob is relative to repo root
+                abs_glob = f"{repo_root}/{source_glob}"
+
+                # Use Path.match on the full path
+                if full_file_path.match(abs_glob):
                     doc_updates[target_doc].append(changed_file)
                     # Stop at first match (Priority Rule)
                     break
