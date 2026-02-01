@@ -3,9 +3,12 @@ import os
 from google import genai
 from google.genai import types
 
+from autodoc.utils.env_loader import load_env
+
 
 class GeminiClient:
     def __init__(self, api_key: str = None, model: str = "gemini-3.0-flash"):
+        load_env()
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found.")

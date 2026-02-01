@@ -1,88 +1,139 @@
-# Auto-Doc Template Repository
+# Auto-Doc Agent
 
-This repository demonstrates a **"Self-Writing Documentation"** workflow. using Git Hooks, Python, and the Google Gemini CLI.
+![Auto-Doc Status](https://img.shields.io/badge/status-active-success.svg)
+![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
+![Gemini Model](https://img.shields.io/badge/model-Gemini%203%20Flash%2FPro-orange)
 
-Whenever you commit code changes to the `src/` directory, a post-commit hook triggers a Gemini Agent to analyze the code and automatically update the documentation in `docs/API.md`.
+**Never write stale documentation again.**
 
-## ✨ Features
-
-- **Zero-Touch Logic**: No need to manually run scripts. Just `git commit`.
-- **Context-Aware**: Uses your local Gemini CLI (with your API Key) to understand your code.
-- **Instant Updates**: Documentation updates happen locally, immediately after the commit.
-
-## 🚀 Setup
-
-### 1. Prerequisites
-
-
-You need **Python 3.x** installed. The system handles dependencies automatically via a local virtual environment.
-
-You must have your **Gemini API Key** configured.
-
-### Configuration
-
-Choose one of the following methods to set your API Key:
-
-- **Option A: Environment Variable (.env)**
-
-  Create a `.env` file in the root of the repo:
-
-  ```bash
-  echo 'GEMINI_API_KEY="AIzaSyYourKeyHere"' > .env
-  ```
-
-- **Option B: Shell Profile**
-
-  Add your API Key to your shell profile (e.g., `.zshrc`, `.bashrc`, `.profile`):
-
-  ```bash
-  export GEMINI_API_KEY="AIzaSyYourKeyHere"
-  ```
-
-### 2. Install the Hook
-
-Clone this repository and run the installer script to set up the Git hooks (since hooks are not cloned by default).
-
-```bash
-git clone https://github.com/your-username/auto-doc-template.git
-cd auto-doc-template
-
-# Install the git hooks
-./install_hook.sh
-```
-
-## 📖 Usage
-
-1. **Modify Code**: Edit `src/main.py` (or any file in `src/`).
-
-2. **Commit**:
-
-   ```bash
-   git add src/main.py
-   git commit -m "feat: added new magic function"
-   ```
-
-3. **Watch Magic**:
-    - The hook will run automatically.
-    - It uses **Gemini 3 Flash** (via the local Python agent) to analyze your code.
-    - `docs/API.md` will be updated with the new documentation.
-
-4. **Finalize**:
-    - Check the changes in `docs/API.md`.
-    - Stage and commit the docs:
-
-      ```bash
-      git add docs/API.md
-      git commit --amend --no-edit  # Or make a new commit
-      ```
-
-## 📂 Structure
-
-- `.auto-doc/scripts/`: Contains the Python logic (`auto_doc.py`) and shell wrapper.
-- `src/`: Source code directory (watched for changes).
-- `docs/`: Documentation directory (auto-updated).
-- `install_hook.sh`: Helper script to set up the local `.git/hooks`.
+Auto-Doc is an intelligent AI agent that lives in your git repository. It watches your commits, analyzes your code changes using **Google's Gemini 3 (Thinking Models)**, and automatically updates your documentation to match the new reality of your codebase.
 
 ---
 
+## 📋 Table of Contents
+
+- [Auto-Doc Agent](#auto-doc-agent)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [🚀 Key Features](#-key-features)
+  - [📦 Installation](#-installation)
+    - [Option A: Install from GitHub (Recommended)](#option-a-install-from-github-recommended)
+    - [Option B: Local Development](#option-b-local-development)
+    - [Authentication](#authentication)
+  - [⚡ Quick Start](#-quick-start)
+  - [⚙️ Configuration](#️-configuration)
+  - [📂 Project Structure \& Documentation](#-project-structure--documentation)
+  - [🛠️ Contributing](#️-contributing)
+
+---
+
+## 🚀 Key Features
+
+- **🤖 Zero-Click Updates**: Runs automatically via a standard Git Post-Commit Hook. You code, it documents.
+- **🧠 Deep Reasoning**: Leverages Gemini 3.0's "Thinking" capabilities to understand complex logic changes, not just syntax.
+- **📚 Context Awareness**: Define "Global Context" files (like `README.md` or `ARCHITECTURE.md`) that are always included in the prompt, ensuring the AI understands the bigger picture.
+- **🗺️ Config-Driven Routing**: Precisely map source files (globs) to specific documentation files (e.g., `src/core/*.py` → `docs/core.md`).
+- **🎨 Custom Templates**: Full control over the AI's output using Jinja2 templates.
+- **🖥️ IDE Compatible**: Works with **VS Code** or any Git client that triggers hooks.
+- **🐕 Dogfooding**: This project documents itself using Auto-Doc!
+
+## 📦 Installation
+
+You can install Auto-Doc directly from the repository using `pip`.
+
+### Option A: Install from GitHub (Recommended)
+Add to your `requirements.txt`:
+```text
+git+https://github.com/jorsm/gemini-autodoc.git@main
+```
+Or install via command line:
+```bash
+pip install git+https://github.com/jorsm/gemini-autodoc.git
+```
+
+### Option B: Local Development
+Cloning the source is useful if you want to modify the agent itself.
+```bash
+git clone https://github.com/jorsm/gemini-autodoc.git
+cd auto-doc
+pip install -e .
+```
+
+### Authentication
+Auto-Doc requires a Google Gemini API Key.
+1.  **Environment Variable** (Best for CI/CD):
+    ```bash
+    export GEMINI_API_KEY="your-api-key-here"
+    ```
+2.  **.env File**:
+    Create a file named `.env` in your project root or inside `.autodoc/.env`. Auto-Doc expects ONE line:
+    ```bash
+    GEMINI_API_KEY=your-api-key-here
+    ```
+
+## ⚡ Quick Start
+
+1.  **Initialize Auto-Doc**:
+    Run inside your project root. This creates `.autodoc/` and installs the git hook.
+    ```bash
+    autodoc init
+    ```
+
+2.  **Configure Mappings**:
+    Edit `.autodoc/config.yaml` to define which code updates which docs.
+    *   See [Configuration Reference](docs/config_file.md) for details.
+    *   Check [.autodoc/config.sample.yaml](.autodoc/config.sample.yaml) for a template.
+
+    ```yaml
+    # Global context (always included)
+    context:
+      files: ["README.md"]
+
+    # File Routing (glob -> doc)
+    mappings:
+      - name: "API Docs"
+        source: "src/**/*.py"
+        doc: "docs/api.md"
+
+    # AI Config
+    model: "gemini-3-flash-preview"
+    thinking_level: "high"
+    ```
+
+3.  **Code & Commit**:
+    ```bash
+    git add .
+    git commit -m "feat: implemented user login"
+    ```
+    
+    > **Note**: This works in **VS Code**, and terminal. The hook runs in the background.
+    > The AI will analyze the changes and update `docs/api.md` automatically in a subsequent operation.
+
+## ⚙️ Configuration
+
+Auto-Doc is highly configurable. The main configuration lives in `.autodoc/config.yaml`.
+
+| Feature | Description | Reference |
+| :--- | :--- | :--- |
+| **Mappings** | Map source files to doc files using globs. | [Config Docs](docs/config_file.md#mappings) |
+| **Thinking** | Control Gemini's reasoning depth (`low`, `high`). | [Config Docs](docs/config_file.md#model) |
+| **Templates** | Customize the prompt sent to the LLM. | [Templates Docs](docs/templates.md) |
+
+## 📂 Project Structure & Documentation
+
+This project's documentation is automatically generated by Auto-Doc. Explore the `docs/` folder to see how it works:
+
+- **[Core Logic](docs/core.md)**: The internal `DocGenerator` engine.
+- **[CLI Commands](docs/commands.md)**: `init` and `sync` command references.
+- **[Utilities](docs/utils.md)**: Git and Logging helpers.
+- **[Configuration File](docs/config_file.md)**: Detailed guide to `config.yaml` options.
+- **[Templates](docs/templates.md)**: Explanation of Jinja2 variables and context.
+
+## 🛠️ Contributing
+
+1.  Fork the repo.
+2.  Create a feature branch.
+3.  Commit your changes (Auto-Doc will try to document them!).
+4.  Push and open a PR.
+
+---
 *Powered by Google Gemini*
