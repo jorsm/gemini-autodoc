@@ -11,17 +11,17 @@ context:
 mappings:
   # 1. Core Logic
   - name: "Core Modules"
-    source: "autodoc/core/**/*.py"
+    source: "autodoc/core/*.py"
     doc: "docs/core.md"
 
   # 2. CLI Commands
   - name: "CLI Commands"
-    source: "autodoc/commands/**/*.py"
+    source: "autodoc/commands/*.py"
     doc: "docs/commands.md"
 
   # 3. Utilities
   - name: "Utilities"
-    source: "autodoc/utils/**/*.py"
+    source: "autodoc/utils/*.py"
     doc: "docs/utils.md"
 
   # 4. Configuration
