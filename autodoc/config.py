@@ -7,7 +7,8 @@ import yaml
 
 @dataclass
 class Config:
-    repo_path: str = "."
+    repo_path: str = ""
+    doc_file: str = ""
 
     model: str = "gemini-3-flash-preview"
     thinking_level: str = "high"
@@ -39,8 +40,6 @@ class Config:
         # 3. Parse Fields
         return cls(
             repo_path=data.get("repo_path", "."),
-            # Legacy fallback if source_dir present but mappings not
-            source_dir=data.get("source_dir", "src"),
             doc_file=data.get("doc_file", "docs/reference.md"),
             model=data.get("model", "gemini-3-flash-preview"),
             thinking_level=data.get("thinking_level", "high"),
