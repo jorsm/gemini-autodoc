@@ -38,14 +38,14 @@ The core synchronization engine that analyzes recent repository changes and trig
 1. **Configuration Loading**: Initializes settings from `.autodoc/config.yaml` and sets the active repository path.
 2. **Change Detection**: Uses a `GitHandler` to identify files modified in the latest commit. If no changes are detected, the process exits gracefully.
 3. **Mapping & Routing**:
-    - Iterates through detected changes and matches them against `source` glob patterns.
-    - **Exclusion Logic**: Checks an optional `exclude` list for each mapping. If a file matches an exclusion pattern, it is skipped for that mapping.
-    - **Resolution**: Resolves paths to ensure accurate matching using `Path.match`.
+    - Iterates through detected changes and matches them against `source` glob patterns defined in the configuration.
+    - **Pattern Matching**: Uses `pathspec` with `gitwildmatch` logic to ensure glob patterns (like `**/*.py`) behave consistently with standard `.gitignore` rules.
+    - **Exclusion Logic**: For each mapping, it checks an optional `exclude` list. If a file matches an exclusion pattern (also via `gitwildmatch`), it is skipped for that mapping.
     - **Grouping**: Groups changed source files by their respective target `doc` file.
-    - **Priority Rule**: Only the first matching (and non-excluded) mapping for a file is processed.
+    - **Priority Rule**: Only the first matching (and non-excluded) mapping for a file is processed. Once a file is assigned to a documentation target, further mappings are ignored for that specific file.
 4. **AI-Driven Update**: For each target documentation file, it invokes the `DocGenerator`. This component uses the Gemini API and the configured Jinja2 templates to rewrite the documentation based on the updated source code logic.
 
 ### Logic Constraints
 - **Empty Commits**: If no files have changed according to Git, the process terminates without taking action.
-- **Mapping Coverage**: Only files matching the `source` globs defined in `config.yaml` trigger updates.
-- **Logging**: Provides real-time feedback via the internal logger regarding detected changes, environment detection, and AI status.
+- **Mapping Coverage**: Only files matching the `source` globs defined in `config.yaml` trigger updates. If a change occurs in a file not covered by a mapping, it is ignored.
+- **Logging**: Provides real-time feedback via the internal logger regarding detected changes, matched mappings, and documentation update status.

@@ -36,7 +36,7 @@ Handles interactions with the local Git repository.
 
 ## Logger
 
-The `autodoc.utils.logger` module provides a standardized logging configuration for the application.
+The `autodoc.utils.logger` module provides a standardized logging configuration for the application, ensuring that execution details are captured for both real-time monitoring and debugging.
 
 ### Functions
 
@@ -45,13 +45,21 @@ The `autodoc.utils.logger` module provides a standardized logging configuration 
 Initializes and configures a logger instance with both console and rotating file output.
 
 - **Parameters:**
-  - `name`: The name of the logger (default is `"autodoc"`).
+  - `name` (str): The name of the logger instance. Defaults to `"autodoc"`.
 - **Functionality:**
-  - **Directory Management**: Automatically creates the `.autodoc/logs/` directory if it does not exist.
-  - **Deduplication**: Checks for existing handlers to avoid duplicate log entries if called multiple times.
+  - **Directory Management**: Ensures the `.autodoc/logs/` directory exists, creating it if necessary.
+  - **Deduplication**: Checks `logger.handlers` to prevent adding redundant handlers if the setup function is called multiple times.
   - **Level**: Sets the logging level to `INFO`.
-  - **Console Output**: Logs messages to standard output via a `StreamHandler`.
-  - **File Output**: Writes logs to `.autodoc/logs/autodoc.log` using a `RotatingFileHandler`.
-  - **Log Rotation**: Files rotate once they reach 1MB, keeping a maximum of 3 backup files.
-  - **Format**: `%(asctime)s - %(name)s - %(levelname)s - %(message)s`
-- **Returns:** A configured `logging.Logger` object.
+  - **Format**: Uses a standardized format: `%(asctime)s - %(name)s - %(levelname)s - %(message)s`.
+  - **Console Output**: Configures a `StreamHandler` to output logs to the terminal.
+  - **File Output**: Configures a `RotatingFileHandler` pointing to `.autodoc/logs/autodoc.log`.
+  - **Log Rotation**: Implements automatic rotation when the log file reaches **1MB** (`maxBytes=1024 * 1024`), maintaining a maximum of **3** backup files.
+- **Returns:** 
+  - `logging.Logger`: A fully configured logger instance.
+
+```python
+from autodoc.utils.logger import setup_logger
+
+logger = setup_logger("my_app")
+logger.info("Auto-Doc is running.")
+```
