@@ -31,7 +31,7 @@ Auto-Doc is an intelligent AI agent that lives in your git repository. It watche
 - **🤖 Zero-Click Updates**: Runs automatically via a standard Git Post-Commit Hook. You code, it documents.
 - **🧠 Deep Reasoning**: Leverages Gemini 3.0's "Thinking" capabilities to understand complex logic changes, not just syntax.
 - **📚 Context Awareness**: Define "Global Context" files (like `README.md` or `ARCHITECTURE.md`) that are always included in the prompt, ensuring the AI understands the bigger picture.
-- **🗺️ Config-Driven Routing**: Precisely map source files (globs) to specific documentation files (e.g., `src/core/*.py` → `docs/core.md`).
+- **🗺️ Config-Driven Routing**: Precisely map source files (globs) to specific documentation files (e.g., `src/core/*.py` → `docs/core.md`). **Matches are evaluated top-to-bottom (Priority Rule)**.
 - **🎨 Custom Templates**: Full control over the AI's output using Jinja2 templates.
 - **🖥️ IDE Compatible**: Works with **VS Code** or any Git client that triggers hooks.
 - **🐕 Dogfooding**: This project documents itself using Auto-Doc!
@@ -89,6 +89,7 @@ Auto-Doc requires a Google Gemini API Key.
       files: ["README.md"]
 
     mappings:
+      # Evaluated Top-to-Bottom. First match wins!
       - name: "API Docs"
         source: "src/**/*.py"
         target: "docs/api.md"

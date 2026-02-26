@@ -18,6 +18,10 @@ context:
 # Mappings (File Routing)
 # -----------------------------------------------------------------------------
 # Mappings: Define which source files map to which documentation files.
+# PRIORITY RULE: Files are matched top-to-bottom. A file will only trigger 
+# an update for the FIRST configuration block it matches. This prevents a single
+# file change from triggering redundant updates across multiple documents.
+# -----------------------------------------------------------------------------
 mappings:
   # Example 1: Main API Documentation
   - name: "Main API"

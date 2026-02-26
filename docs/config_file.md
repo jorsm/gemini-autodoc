@@ -21,6 +21,9 @@ context:
 
 Mappings define the relationship between your source code and your documentation files. You can create multiple mappings to split documentation into different modules or layers.
 
+> [!IMPORTANT]
+> **Priority Rule:** Files are matched against mappings from **top to bottom**. Once a file matches a `source` pattern, Auto-Doc assigns it to that target `doc` and **stops checking further mappings**. This ensures a single file change only triggers one documentation update, preventing redundant AI generation across multiple files.
+
 ```yaml
 mappings:
   - name: "Main API"
