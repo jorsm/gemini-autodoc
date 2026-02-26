@@ -1,5 +1,6 @@
 from collections import defaultdict
-from pathlib import Path
+
+import pathspec
 
 from autodoc.config import Config
 from autodoc.core.doc_generator import DocGenerator
@@ -32,31 +33,26 @@ def sync_docs(repo_path="."):
     doc_updates = defaultdict(list)
 
     if config.mappings:
-        repo_root = Path(config.repo_path).resolve()
-
         for changed_file in changed_files:
             # changed_file is relative to repo root (e.g. "src/main.py")
-            # Create full path for matching
-            full_file_path = repo_root / changed_file
 
             for mapping in config.mappings:
                 source_glob = mapping.get("source")
                 target_doc = mapping.get("doc")
 
-                # Construct absolute glob pattern
-                # We assume source_glob is relative to repo root
-                abs_glob = f"{repo_root}/{source_glob}"
+                # Parse the source glob as a git pathspec wildcard
+                spec = pathspec.PathSpec.from_lines("gitwildmatch", [source_glob])
 
-                # Use Path.match on the full path
-                if full_file_path.match(abs_glob):
+                if spec.match_file(changed_file):
                     # CHECK EXCLUSIONS
                     excludes = mapping.get("exclude", [])
                     is_excluded = False
-                    for exc in excludes:
-                        abs_exc = f"{repo_root}/{exc}"
-                        if full_file_path.match(abs_exc):
-                            is_excluded = True
-                            break
+
+                    if excludes:
+                        exc_spec = pathspec.PathSpec.from_lines(
+                            "gitwildmatch", excludes
+                        )
+                        is_excluded = exc_spec.match_file(changed_file)
 
                     if is_excluded:
                         continue
