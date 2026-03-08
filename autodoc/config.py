@@ -14,8 +14,10 @@ class Config:
     thinking_level: str = "high"
     prompt_template: Optional[str] = None
     system_instruction_template: Optional[str] = None
+    skeleton_template: Optional[str] = None
 
     # New Fields
+    base_dir: str = "."
     context: Optional[Dict] = None  # e.g. {"files": ["README.md"]}
     mappings: Optional[List] = None  # e.g. [{"source": "src/**", "doc": "docs/API.md"}]
 
@@ -45,7 +47,8 @@ class Config:
             thinking_level=data.get("thinking_level", "high"),
             prompt_template=data.get("prompt_template"),
             system_instruction_template=data.get("system_instruction_template"),
+            skeleton_template=data.get("skeleton_template"),
+            base_dir=data.get("base_dir", "."),
             context=data.get("context", {"files": ["README.md"]}),
             mappings=data.get("mappings"),
         )
-

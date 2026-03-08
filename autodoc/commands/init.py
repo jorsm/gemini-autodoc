@@ -83,6 +83,9 @@ fi
         logger.info(f"Creating default config at {config_path}...")
         config_content = """# Auto-Doc Configuration
 
+# Base Directory for resolving paths (e.g. templates)
+base_dir: "."
+
 # Global Context
 context:
   files:
@@ -98,6 +101,7 @@ mappings:
 # Paths to your custom Jinja2 templates
 prompt_template: ".autodoc/templates/doc_prompt.j2"
 system_instruction_template: ".autodoc/templates/system_instruction.j2"
+skeleton_template: ".autodoc/templates/doc_skeleton.j2"
 
 # Model Configuration
 model: "gemini-3-flash-preview"

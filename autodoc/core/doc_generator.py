@@ -45,8 +45,8 @@ class DocGenerator:
         else:
             doc_name = doc_path.stem.replace("_", " ").title()
             doc_content = self._render_template(
-                None,  # Config override for skeleton not yet implemented
-                "autodoc/templates/doc_skeleton.j2",
+                self.config.skeleton_template,
+                "doc_skeleton.j2",
                 doc_name=doc_name,
             )
 
@@ -114,32 +114,60 @@ class DocGenerator:
             return "\n".join(lines)
         return text
 
-    def _render_template(self, config_path, default_path, **kwargs):
+    def _render_template(self, config_path, default_filename, **kwargs):
         """
         Loads and renders a Jinja2 template.
-        Priority: 1. Configured Path, 2. Default Internal Path.
+        Priority:
+        1. Configured Path (resolved against base_dir)
+        2. Local Project Default (base_dir/.autodoc/templates/filename)
+        3. Internal Package Default
         """
+        import importlib.resources
+
         template_str = ""
 
         # 1. Try Configured Path
         if config_path:
-            p = Path(config_path)
+            p = Path(self.config.base_dir) / config_path
             if p.exists():
                 template_str = p.read_text(encoding="utf-8")
 
-        # 2. Try Default Internal Path (if configured path missing or not set)
+        # 2. Try Local Project Default
         if not template_str:
-            p = Path(default_path)
+            p = (
+                Path(self.config.base_dir)
+                / ".autodoc/templates"
+                / Path(default_filename).name
+            )
             if p.exists():
                 template_str = p.read_text(encoding="utf-8")
 
+        # 3. Try Internal Package Default
         if not template_str:
-            logger.warning(f"⚠️  Template not found: {config_path} or {default_path}")
+            try:
+                # Modern python >= 3.9
+                resource = (
+                    importlib.resources.files("autodoc.templates")
+                    / Path(default_filename).name
+                )
+                if resource.is_file():
+                    template_str = resource.read_text(encoding="utf-8")
+            except Exception as e:
+                logger.debug(f"Failed to load package templates via importlib: {e}")
+                # Fallback for dev mode
+                p = (
+                    Path(__file__).resolve().parent.parent
+                    / "templates"
+                    / Path(default_filename).name
+                )
+                if p.exists():
+                    template_str = p.read_text(encoding="utf-8")
+
+        if not template_str:
+            logger.warning(
+                f"⚠️  Template not found: {config_path} or {default_filename}"
+            )
             return ""
 
         t = Template(template_str)
         return t.render(**kwargs)
-
-
-
-
