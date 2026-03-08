@@ -66,3 +66,5 @@ class GitHandler:
         if self.repo:
             return self.repo.working_dir
         return os.getcwd()
+\n# trigger autodoc
+\n# trigger autodoc

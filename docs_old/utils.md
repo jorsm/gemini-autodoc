@@ -28,6 +28,18 @@ Handles interactions with the local Git repository.
     - Returns an empty list if the repository is invalid or if the `base` commit cannot be found (e.g., in an initial commit scenario).
     - Filters changes to include only Added (`A`), Modified (`M`), and Renamed (`R`) files.
 
+- **`get_commit_context(commit: str = "HEAD") -> dict`**
+  Retrieves metadata and context for a specific commit.
+  - **Parameters:**
+    - `commit`: The commit hash or reference to query (default is `HEAD`).
+  - **Returns:** A dictionary containing:
+    - `hash`: The full SHA-1 hash of the commit.
+    - `message`: The commit message (stripped of leading/trailing whitespace).
+    - `author`: The name of the commit author.
+    - `author_email`: The email of the commit author.
+    - `date`: The ISO 8601 formatted string of the commit date.
+  - **Behavior:** Returns an empty dictionary if the repository is invalid or if the commit reference cannot be resolved.
+
 - **`get_root_dir() -> str`**
   Returns the absolute path to the root of the Git repository.
   - **Returns:** The `working_dir` of the repository if it exists, otherwise the current working directory.

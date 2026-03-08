@@ -48,3 +48,5 @@ class Config:
             context=data.get("context", {"files": ["README.md"]}),
             mappings=data.get("mappings"),
         )
+\n# trigger autodoc
+\n# trigger autodoc

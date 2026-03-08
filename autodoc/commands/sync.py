@@ -73,3 +73,5 @@ def sync_docs(repo_path="."):
     for doc_target, sources in doc_updates.items():
         logger.info(f"Triggering update for {doc_target} with sources: {sources}")
         generator.update_docs(sources, doc_target, git_context=git_context)
+\n# trigger autodoc
+\n# trigger autodoc

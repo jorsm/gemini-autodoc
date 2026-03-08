@@ -37,7 +37,15 @@ class DocGenerator:
         context_files = self._read_files_with_content(context_paths)
 
         doc_path = Path(doc_target)
-        doc_content = doc_path.read_text(encoding="utf-8") if doc_path.exists() else ""
+        if doc_path.exists():
+            doc_content = doc_path.read_text(encoding="utf-8")
+        else:
+            doc_name = doc_path.stem.replace("_", " ").title()
+            doc_content = self._render_template(
+                None,  # Config override for skeleton not yet implemented
+                "autodoc/templates/doc_skeleton.j2",
+                doc_name=doc_name,
+            )
 
         prompt = self._render_template(
             self.config.prompt_template,
@@ -120,3 +128,5 @@ class DocGenerator:
 
         t = Template(template_str)
         return t.render(**kwargs)
+\n# trigger autodoc
+\n# trigger autodoc

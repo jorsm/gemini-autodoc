@@ -117,3 +117,5 @@ def _get_package_template(name: str) -> str:
         if template_path.exists():
             return template_path.read_text(encoding="utf-8")
         return f"# Error loading template: {name}"
+\n# trigger autodoc
+\n# trigger autodoc

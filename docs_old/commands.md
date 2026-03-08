@@ -2,6 +2,15 @@
 
 This page provides a reference for the core commands available in the Auto-Doc system. These commands manage the lifecycle of automated documentation, from project initialization to manual or hook-triggered synchronization.
 
+- [CLI Commands](#cli-commands)
+  - [`init_project`](#init_project)
+    - [Functionality](#functionality)
+    - [Default Configuration Created](#default-configuration-created)
+  - [`sync_docs`](#sync_docs)
+    - [Parameters](#parameters)
+    - [Workflow](#workflow)
+    - [Logic Constraints](#logic-constraints)
+
 ## `init_project`
 
 Initializes the current repository to work with Auto-Doc by setting up the necessary git hooks, configuration files, and Jinja2 templates.
@@ -36,14 +45,16 @@ The core synchronization engine that analyzes recent repository changes and trig
 
 ### Workflow
 1. **Configuration Loading**: Initializes settings from `.autodoc/config.yaml` and sets the active repository path.
-2. **Change Detection**: Uses a `GitHandler` to identify files modified in the latest commit. If no changes are detected, the process exits gracefully.
+2. **Change Detection**: Uses a `GitHandler` to identify files modified in the latest commit and retrieves the **commit context** (commit message and metadata). If no changes are detected, the process exits gracefully.
 3. **Mapping & Routing**:
     - Iterates through detected changes and matches them against `source` glob patterns defined in the configuration.
-    - **Pattern Matching**: Uses `pathspec` with `gitwildmatch` logic to ensure glob patterns (like `**/*.py`) behave consistently with standard `.gitignore` rules.
+    - **Pattern Matching**: Uses `pathspec` with `gitwildmatch` logic to ensure glob patterns (like `**/*.py`) behave consistently with standard Git behavior.
     - **Exclusion Logic**: For each mapping, it checks an optional `exclude` list. If a file matches an exclusion pattern (also via `gitwildmatch`), it is skipped for that mapping.
     - **Grouping**: Groups changed source files by their respective target `doc` file.
     - **Priority Rule**: Only the first matching (and non-excluded) mapping for a file is processed. Once a file is assigned to a documentation target, further mappings are ignored for that specific file.
-4. **AI-Driven Update**: For each target documentation file, it invokes the `DocGenerator`. This component uses the Gemini API and the configured Jinja2 templates to rewrite the documentation based on the updated source code logic.
+4. **AI-Driven Update**: For each target documentation file, it invokes the `DocGenerator`.
+    - **Context Injection**: Passes the list of changed source files, the target documentation path, and the `git_context` to the generator.
+    - **Generation**: The generator uses the Gemini API and configured Jinja2 templates to rewrite the documentation, ensuring it reflects the logic changes found in the source code.
 
 ### Logic Constraints
 - **Empty Commits**: If no files have changed according to Git, the process terminates without taking action.
