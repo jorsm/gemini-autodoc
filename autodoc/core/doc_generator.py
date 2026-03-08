@@ -128,5 +128,5 @@ class DocGenerator:
 
         t = Template(template_str)
         return t.render(**kwargs)
-\n# trigger autodoc
-\n# trigger autodoc
+# trigger autodoc
+# trigger autodoc

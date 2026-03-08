@@ -25,5 +25,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-\n# trigger autodoc
-\n# trigger autodoc
+# trigger autodoc
+# trigger autodoc

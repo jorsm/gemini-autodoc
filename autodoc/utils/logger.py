@@ -37,5 +37,5 @@ def setup_logger(name="autodoc"):
     logger.addHandler(console_handler)
 
     return logger
-\n# trigger autodoc
-\n# trigger autodoc
+# trigger autodoc
+# trigger autodoc

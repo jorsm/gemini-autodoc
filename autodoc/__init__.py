@@ -1,2 +1,2 @@
-\n# trigger autodoc
-\n# trigger autodoc
+# trigger autodoc
+# trigger autodoc
