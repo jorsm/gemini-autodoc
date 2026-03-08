@@ -21,7 +21,7 @@ When looking for a configuration file, the system follows this order:
 1.  **Explicit Path**: A path passed directly to the `load()` method.
 2.  **Standard Path**: `.autodoc/config.yaml` in the project root.
 3.  **Legacy Path**: `.autodoc.yaml` in the project root.
-4.  **Default Instance**: If no file is found, a default configuration is returned with empty mappings.
+4.  **Default Instance**: If no file is found, a default configuration is returned with `mappings=[]`.
 
 ---
 
@@ -34,10 +34,12 @@ The primary container for all application settings.
 | :--- | :--- | :--- | :--- |
 | `repo_path` | `str` | `"."` | The absolute or relative path to the git repository. |
 | `doc_file` | `str` | `"docs/reference.md"` | Default target documentation file used if no specific mapping matches. |
+| `base_dir` | `str` | `"."` | The base directory for resolving relative paths and finding source files. |
 | `model` | `str` | `"gemini-3-flash-preview"` | The specific Google Gemini model to use. |
 | `thinking_level` | `str` | `"high"` | Controls the reasoning depth of the model. |
 | `prompt_template` | `Optional[str]` | `None` | Custom path or string for the Jinja2 user prompt template. |
 | `system_instruction_template` | `Optional[str]` | `None` | Custom path or string for the AI system instructions. |
+| `skeleton_template` | `Optional[str]` | `None` | Custom path or string for the AI to follow when generating the initial structure of a doc. |
 | `context` | `Optional[Dict]` | `{"files": ["README.md"]}` | Global context settings, typically a list of files always sent to the AI. |
 | `mappings` | `Optional[List]` | `None` | A list of rules mapping source file patterns (globs) to documentation files. |
 
@@ -69,6 +71,9 @@ The YAML file structure expected by Auto-Doc:
 model: "gemini-3-flash-preview"
 thinking_level: "high"
 
+# Base directory for the project
+base_dir: "."
+
 # Global context included in every AI request
 context:
   files:
@@ -86,6 +91,7 @@ mappings:
 # Optional: Override templates
 # prompt_template: "templates/custom_prompt.j2"
 # system_instruction_template: "templates/custom_system.j2"
+# skeleton_template: "templates/custom_skeleton.j2"
 ```
 
 ### Mapping Rules
