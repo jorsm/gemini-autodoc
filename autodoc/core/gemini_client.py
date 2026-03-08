@@ -38,10 +38,4 @@ class GeminiClient:
         except Exception as e:
             print(f"Gemini API Error: {e}")
             raise e
-# trigger autodoc
-# trigger autodoc
-# rel links
-# force link rewrite
-# local templates
 
-# force update docs

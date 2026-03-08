@@ -39,10 +39,4 @@ def load_env(paths=None):
                     # Only set if not already set (respect system envs)
                     if key and key not in os.environ:
                         os.environ[key] = value
-# trigger autodoc
-# trigger autodoc
-# rel links
-# force link rewrite
-# local templates
 
-# force update docs

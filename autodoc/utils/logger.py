@@ -37,10 +37,4 @@ def setup_logger(name="autodoc"):
     logger.addHandler(console_handler)
 
     return logger
-# trigger autodoc
-# trigger autodoc
-# rel links
-# force link rewrite
-# local templates
 
-# force update docs

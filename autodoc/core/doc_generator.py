@@ -141,12 +141,5 @@ class DocGenerator:
         return t.render(**kwargs)
 
 
-# trigger autodoc
-# trigger autodoc
-# rel links
-# force link rewrite
-# local templates
 
-# force update docs
 
-# flash lite test

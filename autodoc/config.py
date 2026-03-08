@@ -48,10 +48,4 @@ class Config:
             context=data.get("context", {"files": ["README.md"]}),
             mappings=data.get("mappings"),
         )
-# trigger autodoc
-# trigger autodoc
-# rel links
-# force link rewrite
-# local templates
 
-# force update docs
