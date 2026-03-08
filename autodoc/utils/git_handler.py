@@ -42,6 +42,26 @@ class GitHandler:
 
         return files
 
+    def get_commit_context(self, commit: str = "HEAD") -> dict:
+        """
+        Get metadata about a specific commit.
+        """
+        if not self.repo:
+            return {}
+
+        try:
+            c = self.repo.commit(commit)
+            return {
+                "hash": c.hexsha,
+                "message": c.message.strip(),
+                "author": c.author.name,
+                "author_email": c.author.email,
+                "date": c.committed_datetime.isoformat(),
+            }
+        except (git.exc.BadName, ValueError, Exception) as e:
+            print(f"Git error getting commit context: {e}")
+            return {}
+
     def get_root_dir(self) -> str:
         if self.repo:
             return self.repo.working_dir

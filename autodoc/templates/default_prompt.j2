@@ -6,23 +6,39 @@
       [{ "path": "README.md", "content": "..." }, ...]
   - doc_file: str - The path of the documentation file being updated (e.g., "docs/API.md").
   - doc_content: str - The current content of the documentation file (for reference).
+  - git_context: Dict - [Optional] Information about the Git commit that triggered the update.
 #}
-GLOBAL CONTEXT:
+<global_context>
 {% for ctx in context_files %}
--- {{ ctx.path }} --
+### {{ ctx.path }}
 {{ ctx.content }}
 {% endfor %}
+</global_context>
 
-SOURCE CODE (Changed Files):
+{% if git_context %}
+<git_context>
+Commit Message:
+{{ git_context.message }}
+</git_context>
+{% endif %}
+
+<source_code>
 {% for src in sources %}
--- {{ src.path }} --
+### {{ src.path }}
 {{ src.content }}
 {% endfor %}
+</source_code>
 
-CURRENT DOCUMENTATION ({{ doc_file }}):
+<current_documentation file="{{ doc_file }}">
 {{ doc_content }}
+</current_documentation>
 
-INSTRUCTIONS:
-Update the documentation above to reflect the changes in the source code.
-Ensure all public APIs, classes, and functions are documented clearly.
-Return only the Markdown content.
+<instructions>
+Update the `<current_documentation>` to reflect the logic, signatures, and behaviors found in `<source_code>`. Use the `<git_context>` commit message to understand the developer's intent behind the changes.
+
+Rules:
+1. Integrate the necessary updates seamlessly into the existing content.
+2. Leave all unrelated sections completely unchanged.
+3. Do not summarize or remove existing valid information.
+4. Output the entire updated Markdown file.
+</instructions>

@@ -21,6 +21,7 @@ def sync_docs(repo_path="."):
 
     git_handler = GitHandler(config.repo_path)
     changed_files = git_handler.get_changed_files()
+    git_context = git_handler.get_commit_context()
 
     if not changed_files:
         logger.info("No changes detected.")
@@ -71,4 +72,4 @@ def sync_docs(repo_path="."):
     generator = DocGenerator(config)
     for doc_target, sources in doc_updates.items():
         logger.info(f"Triggering update for {doc_target} with sources: {sources}")
-        generator.update_docs(sources, doc_target)
+        generator.update_docs(sources, doc_target, git_context=git_context)

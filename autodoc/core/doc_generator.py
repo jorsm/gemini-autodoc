@@ -19,7 +19,9 @@ class DocGenerator:
             logger.warning(f"⚠️  {e}")
             self.client = None
 
-    def update_docs(self, source_files: list, doc_target: str):
+    def update_docs(
+        self, source_files: list, doc_target: str, git_context: dict = None
+    ):
         if not self.client:
             logger.error("Skipping Auto-Doc: Client not initialized (missing API Key?)")
             return
@@ -44,6 +46,7 @@ class DocGenerator:
             context_files=context_files,
             doc_file=doc_path,
             doc_content=doc_content,
+            git_context=git_context,
         )
 
         system_instruction = self._render_template(
