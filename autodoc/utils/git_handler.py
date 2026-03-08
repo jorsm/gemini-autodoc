@@ -70,3 +70,4 @@ class GitHandler:
 # trigger autodoc
 # rel links
 # force link rewrite
+# local templates

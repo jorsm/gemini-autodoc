@@ -121,3 +121,4 @@ def _get_package_template(name: str) -> str:
 # trigger autodoc
 # rel links
 # force link rewrite
+# local templates

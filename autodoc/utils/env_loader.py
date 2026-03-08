@@ -43,3 +43,4 @@ def load_env(paths=None):
 # trigger autodoc
 # rel links
 # force link rewrite
+# local templates

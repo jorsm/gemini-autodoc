@@ -29,3 +29,4 @@ if __name__ == "__main__":
 # trigger autodoc
 # rel links
 # force link rewrite
+# local templates

@@ -52,3 +52,4 @@ class Config:
 # trigger autodoc
 # rel links
 # force link rewrite
+# local templates
