@@ -59,20 +59,22 @@ fi
         template_resources = importlib.resources.files("autodoc.templates")
         for resource in template_resources.iterdir():
             if resource.is_file() and resource.name.endswith(".j2"):
-                target_name = "doc_prompt.j2" if resource.name == "default_prompt.j2" else resource.name
-                target_path = templates_dir / target_name
+                target_path = templates_dir / resource.name
                 if not target_path.exists():
-                    target_path.write_text(resource.read_text(encoding="utf-8"), encoding="utf-8")
+                    target_path.write_text(
+                        resource.read_text(encoding="utf-8"), encoding="utf-8"
+                    )
     except Exception as e:
         logger.warning(f"Failed to load package templates via importlib: {e}")
         # Fallback for dev mode
         base_dir = Path(__file__).resolve().parent.parent / "templates"
         if base_dir.exists():
             for f in base_dir.glob("*.j2"):
-                target_name = "doc_prompt.j2" if f.name == "default_prompt.j2" else f.name
-                target_path = templates_dir / target_name
+                target_path = templates_dir / f.name
                 if not target_path.exists():
-                    target_path.write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
+                    target_path.write_text(
+                        f.read_text(encoding="utf-8"), encoding="utf-8"
+                    )
 
     # 3. Create Default Config
     config_path = Path(".autodoc/config.yaml")
@@ -108,5 +110,3 @@ thinking_level: "high"
             logger.error(f"Failed to create config: {e}")
     else:
         logger.info(f"ℹ️  Config file already exists at {config_path}")
-
-
