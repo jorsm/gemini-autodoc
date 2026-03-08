@@ -42,3 +42,4 @@ def load_env(paths=None):
 # trigger autodoc
 # trigger autodoc
 # rel links
+# force link rewrite

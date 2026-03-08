@@ -76,3 +76,4 @@ def sync_docs(repo_path="."):
 # trigger autodoc
 # trigger autodoc
 # rel links
+# force link rewrite

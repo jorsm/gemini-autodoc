@@ -28,3 +28,4 @@ if __name__ == "__main__":
 # trigger autodoc
 # trigger autodoc
 # rel links
+# force link rewrite
