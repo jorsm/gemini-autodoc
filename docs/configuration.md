@@ -30,29 +30,29 @@ When looking for a configuration file, the system follows this order:
 ### Config Dataclass
 The primary container for all application settings.
 
-| Field | Type | Default | Description |
+| Field | Type | Default (via `load`) | Description |
 | :--- | :--- | :--- | :--- |
-| `repo_path` | `str` | `""` | The absolute or relative path to the git repository. |
-| `doc_file` | `str` | `""` | Default target documentation file (Legacy/Fallback). |
+| `repo_path` | `str` | `"."` | The absolute or relative path to the git repository. |
+| `doc_file` | `str` | `"docs/reference.md"` | Default target documentation file used if no specific mapping matches. |
 | `model` | `str` | `"gemini-3-flash-preview"` | The specific Google Gemini model to use. |
 | `thinking_level` | `str` | `"high"` | Controls the reasoning depth of the model. |
-| `prompt_template` | `Optional[str]` | `None` | Custom Jinja2 template for the user prompt. |
-| `system_instruction_template` | `Optional[str]` | `None` | Custom Jinja2 template for the system instructions. |
-| `context` | `Optional[Dict]` | `None` | Global context settings (e.g., `{"files": ["README.md"]}`). |
-| `mappings` | `Optional[List]` | `None` | List of rules mapping source globs to documentation files. |
+| `prompt_template` | `Optional[str]` | `None` | Custom path or string for the Jinja2 user prompt template. |
+| `system_instruction_template` | `Optional[str]` | `None` | Custom path or string for the AI system instructions. |
+| `context` | `Optional[Dict]` | `{"files": ["README.md"]}` | Global context settings, typically a list of files always sent to the AI. |
+| `mappings` | `Optional[List]` | `None` | A list of rules mapping source file patterns (globs) to documentation files. |
 
 [source](../autodoc/config.py)
 
 ### Config.load()
 `@classmethod load(config_path: str = None) -> Config`
 
-Loads the configuration from a YAML file. If no path is provided, it searches the default locations mentioned in [Core Concepts](#core-concepts).
+Loads the configuration from a YAML file. If no path is provided, it searches the default locations mentioned in [Core Concepts](#core-concepts). If no configuration file is found anywhere, it returns a minimal `Config` instance with an empty mapping list.
 
 **Parameters:**
 - `config_path`: Optional explicit path to a `.yaml` configuration file.
 
 **Returns:**
-- An initialized `Config` instance.
+- An initialized `Config` instance populated with YAML values or sensible defaults.
 
 [source](../autodoc/config.py)
 
@@ -77,18 +77,16 @@ context:
 
 # Priority-based routing (Top-to-bottom)
 mappings:
-  - name: "Core Logic"
-    source: "autodoc/*.py"
-    target: "docs/core.md"
-    exclude: ["autodoc/tests/**"]
+  - source: "autodoc/*.py"
+    doc: "docs/core.md"
     
-  - name: "Utilities"
-    source: "autodoc/utils/*.py"
-    target: "docs/utils.md"
+  - source: "autodoc/utils/*.py"
+    doc: "docs/utils.md"
 
 # Optional: Override templates
-# prompt_template: "path/to/my_template.j2"
+# prompt_template: "templates/custom_prompt.j2"
+# system_instruction_template: "templates/custom_system.j2"
 ```
 
 ### Mapping Rules
-Mappings are evaluated in order. The first rule that matches a changed file will determine which documentation file is updated. This allows you to create specific documentation for subdirectories while having a "catch-all" at the bottom.
+Mappings are evaluated in order (**Priority Rule**). The first rule that matches a changed file (using glob patterns) determines which documentation file will be updated. This allows you to create specific documentation for subdirectories or modules while having a "catch-all" pattern at the bottom of the list.

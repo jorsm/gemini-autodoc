@@ -15,12 +15,12 @@ The `core` module contains the primary engine of Auto-Doc. It is responsible for
 
 ### Orchestration
 The `DocGenerator` serves as the central orchestrator. It maps source files to documentation targets based on the user's configuration. It handles:
-- **Context Injection**: Merging global context files (like READMEs) into the prompt.
-- **Template Rendering**: Using Jinja2 to allow users to customize how prompts and documentation skeletons are structured.
-- **File Management**: Reading source code and safely writing updated Markdown files.
+- **Context Injection**: Merging global context files (defined in `config.yaml`) into the prompt to provide the AI with project-wide knowledge.
+- **Template Rendering**: Uses Jinja2 for all AI communication. It follows a priority system: if a custom template path is provided in the configuration, it is used; otherwise, it falls back to the internal default templates.
+- **File Management**: Reading source code, generating relative links for documentation cross-referencing, and safely writing updated Markdown files.
 
 ### AI Reasoning
-The `GeminiClient` interfaces with Google's Gemini models. It specifically utilizes the **Thinking** capabilities of Gemini 3.0, allowing the agent to reason about code logic rather than just performing keyword matching. The `thinking_level` can be adjusted to balance speed and reasoning depth.
+The `GeminiClient` interfaces with Google's Gemini models using the `google-genai` SDK. It leverages the **Thinking** capabilities of the Gemini 3.0 family, allowing the agent to perform deep reasoning about code logic and architecture. The depth of this reasoning is controlled via the `thinking_level` parameter.
 
 ---
 
@@ -33,72 +33,79 @@ The main class responsible for the end-to-end documentation update process.
 Initializes the generator with a project configuration.
 - **Parameters**:
     - `config`: A `Config` object containing model settings, mappings, and template paths.
-- **Side Effects**: Instantiates a `GeminiClient`. Logs a warning if the client fails to initialize (e.g., missing API key).
+- **Behavior**: Instantiates a `GeminiClient`. If the API key is missing, it logs a warning and disables generation.
 
 #### `update_docs(self, source_files: list, doc_target: str, git_context: dict = None)`
-The primary method to update a specific documentation file based on a set of source files.
+Updates or creates a documentation file based on provided source files.
 - **Parameters**:
-    - `source_files`: A list of strings/paths to the source code files being documented.
-    - `doc_target`: The path to the Markdown file to be updated or created.
-    - `git_context`: (Optional) A dictionary containing metadata about the recent git commit (author, message, diff summary).
-- **Logic**:
-    1. Reads source files and generates relative links.
-    2. Reads global context files defined in the config.
-    3. Loads the existing documentation or creates a skeleton from a template.
-    4. Renders the system instruction and prompt via Jinja2.
-    5. Calls the Gemini API and cleans the Markdown response.
-    6. Writes the result to `doc_target`. [source](../autodoc/core/doc_generator.py)
+    - `source_files`: A list of paths to the source code files.
+    - `doc_target`: The path to the Markdown file to be updated.
+    - `git_context`: (Optional) Metadata about the git commit (e.g., commit message, diff summary).
+- **Workflow**:
+    1. **Source Loading**: Reads source files and calculates relative links from the doc target to the source code.
+    2. **Context Gathering**: Loads global context files specified in the configuration.
+    3. **Content Preparation**: If the target exists, it reads the current content. If not, it generates a new document skeleton using `autodoc/templates/doc_skeleton.j2`.
+    4. **Prompt Construction**: Renders the system instruction and the user prompt using Jinja2 templates (`system_instruction.j2` and `default_prompt.j2`).
+    5. **AI Generation**: Sends the data to the Gemini API with the configured `thinking_level`.
+    6. **Post-Processing**: Strips Markdown code block wrappers from the AI response and writes the cleaned content to the filesystem.
 
 ---
 
 ### `GeminiClient`
-A wrapper around the Google GenAI SDK.
+A wrapper around the Google GenAI SDK for interacting with Gemini models.
 
 #### `__init__(self, api_key: str = None, model: str = "gemini-3.0-flash")`
-Sets up the Google GenAI client.
+Sets up the GenAI client.
 - **Parameters**:
-    - `api_key`: (Optional) The Google API key. If not provided, it looks for `GEMINI_API_KEY` in environment variables or `.env`.
-    - `model`: The model identifier to use (default: `gemini-3.0-flash`).
-- **Raises**: `ValueError` if no API key is found. [source](../autodoc/core/gemini_client.py)
+    - `api_key`: (Optional) The Google API key. If omitted, it attempts to load from `GEMINI_API_KEY` environment variable or `.env` file.
+    - `model`: The specific Gemini model identifier (default: `gemini-3.0-flash`).
+- **Raises**: `ValueError` if no API key is found.
 
 #### `generate_documentation(self, prompt: str, system_instruction: str = None, thinking_level: str = "high") -> str`
-Sends a request to the Gemini model to generate documentation content.
+Sends a generation request to the model with specific reasoning configurations.
 - **Parameters**:
-    - `prompt`: The full user prompt containing source code and context.
-    - `system_instruction`: (Optional) The system-level persona or constraints.
-    - `thinking_level`: The reasoning depth for the model (`"minimal"`, `"low"`, `"medium"`, or `"high"`).
-- **Returns**: The generated Markdown text as a string. [source](../autodoc/core/gemini_client.py)
+    - `prompt`: The user-level instructions and data.
+    - `system_instruction`: (Optional) The persona or high-level constraints for the model.
+    - `thinking_level`: The reasoning depth (`"minimal"`, `"low"`, `"medium"`, or `"high"`).
+- **Returns**: The generated Markdown text.
+- **Details**: Uses `include_thoughts=False` to return only the final documentation output while utilizing the model's internal reasoning process.
 
 ---
 
 ## Examples
 
 ### Manual Doc Generation
-While Auto-Doc usually runs via git hooks, you can use the core components programmatically:
+You can use the core components programmatically to trigger updates outside of the standard git hook workflow:
 
 ```python
 from autodoc.config import Config
 from autodoc.core.doc_generator import DocGenerator
 
-# Load configuration
+# 1. Load configuration
 config = Config.load_from_file(".autodoc/config.yaml")
 
-# Initialize generator
+# 2. Initialize generator
 generator = DocGenerator(config)
 
-# Update a specific doc manually
+# 3. Update a specific doc manually
 generator.update_docs(
     source_files=["autodoc/core/doc_generator.py"],
     doc_target="docs/core.md",
-    git_context={"message": "Refactored template logic"}
+    git_context={"message": "docs: updating core logic documentation"}
 )
 ```
 
-### Customizing Reasoning
-You can configure the AI's "Thinking" level in the `config.yaml` passed to the `DocGenerator`:
+### Response Cleaning
+The `DocGenerator` automatically handles AI "chattiness" by stripping Markdown wrappers:
 
-```yaml
-# config.yaml
-model: "gemini-3-flash-preview"
-thinking_level: "high" # Options: minimal, low, medium, high
+```python
+# Raw AI Response:
+# ```markdown
+# # My Documentation
+# content...
+# ```
+
+# DocGenerator._clean_markdown_response(text) returns:
+# # My Documentation
+# content...
 ```

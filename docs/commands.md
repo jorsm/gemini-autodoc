@@ -15,8 +15,8 @@ The `commands` module provides the primary functional logic for the Auto-Doc CLI
 
 The CLI provides two main workflows:
 
-1.  **Initialization (`init`)**: Sets up the necessary infrastructure within a local git repository. This includes creating a `.autodoc/` directory for configuration and templates, and installing a Git `post-commit` hook. The hook is "locked" to the Python interpreter used during initialization to ensure stability across different virtual environments.
-2.  **Synchronization (`sync`)**: Analyzes the current state of the repository. It identifies changed files via Git, compares them against the defined `mappings` in `config.yaml`, and sends relevant code snippets to the Gemini model for documentation generation.
+1.  **Initialization (`init`)**: Sets up the necessary infrastructure within a local git repository. This includes creating a `.autodoc/` directory for configuration and templates, and installing a Git `post-commit` hook. The hook is "locked" to the Python interpreter used during initialization to ensure stability across different virtual environments (Conda, Poetry, Venv).
+2.  **Synchronization (`sync`)**: Analyzes the current state of the repository. It identifies changed files and commit metadata via Git, compares them against the defined `mappings` in `config.yaml`, and sends relevant code snippets to the Gemini model for documentation generation.
 
 ---
 
@@ -28,27 +28,28 @@ Installs the Auto-Doc environment and git hook in the current repository.
 **Logic:**
 - **Git Hook**: Creates or overwrites `.git/hooks/post-commit`. It captures `sys.executable` to ensure the hook runs using the same Python environment where Auto-Doc was installed.
 - **Templates**: Generates default Jinja2 templates in `.autodoc/templates/`:
-    - `system_instruction.j2`: The persona and rules for the AI.
-    - `doc_prompt.j2`: The specific prompt structure for updating documentation.
-- **Configuration**: Creates a default `.autodoc/config.yaml` if one does not already exist.
+    - `system_instruction.j2`: Defines the persona and core rules for the AI.
+    - `doc_prompt.j2`: Defines the specific prompt structure used when requesting documentation updates.
+- **Configuration**: Creates a default `.autodoc/config.yaml` if one does not already exist, pre-configured with standard defaults for Gemini models and basic source mappings.
 
 [source](../autodoc/commands/init.py)
 
 ---
 
 ### `sync_docs(repo_path=".")`
-Manually triggers the analysis and documentation update process.
+Manually triggers the analysis and documentation update process. This is the same logic executed by the git hook.
 
 **Parameters:**
 - `repo_path` (*str*): The path to the root of the git repository. Defaults to the current directory.
 
 **Logic:**
-1.  **Change Detection**: Uses `GitHandler` to find files changed in the most recent commit.
+1.  **Change Detection**: Uses `GitHandler` to identify files changed in the most recent commit and retrieves the commit message/context.
 2.  **Mapping & Routing**:
-    - Evaluates changed files against `mappings` defined in the config.
-    - **Priority Rule**: Matches are evaluated top-to-bottom; the first mapping that matches a file's glob pattern (and is not excluded) takes ownership of that file.
-    - Supports `gitwildmatch` patterns (e.g., `src/**/*.py`).
-3.  **Generation**: For each documentation target identified, it collects the source code of the changed files and invokes the `DocGenerator`.
+    - Evaluates changed files against the `mappings` defined in the configuration.
+    - **Priority Rule**: Matches are evaluated top-to-bottom; the first mapping that matches a file's glob pattern takes ownership of that file.
+    - **Exclusions**: If a mapping defines an `exclude` list, files matching those patterns are skipped even if they match the primary `source` glob.
+    - Pattern matching follows `gitwildmatch` specifications (standard `.gitignore` style).
+3.  **Generation**: Groups source files by their target documentation file. For each target, it invokes the `DocGenerator` to synthesize the changes into the documentation.
 
 [source](../autodoc/commands/sync.py)
 
@@ -68,15 +69,19 @@ If you want to force a documentation update without committing, or to test your 
 autodoc sync
 ```
 
-### Routing Logic Example
+### Routing and Exclusions Example
 Given a configuration like this:
 ```yaml
 mappings:
-  - name: "Core"
-    source: "src/core/*.py"
-    doc: "docs/core.md"
-  - name: "Utils"
+  - name: "Internal Utilities"
+    source: "src/utils/*.py"
+    exclude: ["src/utils/private_*.py"]
+    doc: "docs/utils.md"
+  - name: "Catch-All"
     source: "src/**/*.py"
     doc: "docs/general.md"
 ```
-If `src/core/logic.py` changes, it will be routed to `docs/core.md` because the "Core" mapping appears first. It will *not* be processed by the "Utils" mapping.
+
+- `src/utils/string_helper.py` -> Routes to `docs/utils.md`.
+- `src/utils/private_api.py` -> Matches the "Internal Utilities" source, but is **excluded**. It falls through to the "Catch-All" mapping and routes to `docs/general.md`.
+- `src/core/logic.py` -> Skips the first mapping and routes to `docs/general.md`.
