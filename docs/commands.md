@@ -26,11 +26,16 @@ The CLI provides two main workflows:
 Installs the Auto-Doc environment and git hook in the current repository.
 
 **Logic:**
-- **Git Hook**: Creates or overwrites `.git/hooks/post-commit`. It captures `sys.executable` to ensure the hook runs using the same Python environment where Auto-Doc was installed.
-- **Templates**: Generates default Jinja2 templates in `.autodoc/templates/`:
+- **Git Hook**: Creates or overwrites `.git/hooks/post-commit`. It captures the absolute path of the current Python interpreter (`sys.executable`) and writes a shell script that invokes the `autodoc.hooks.post_commit` module. This ensures the hook runs in the same environment where Auto-Doc is installed, regardless of how the git commit is triggered (CLI, VS Code, JetBrains, etc.).
+- **Templates**: Extracts all standard Jinja2 templates (files ending in `.j2`) from the package resources into `.autodoc/templates/`. 
     - `system_instruction.j2`: Defines the persona and core rules for the AI.
-    - `doc_prompt.j2`: Defines the specific prompt structure used when requesting documentation updates.
-- **Configuration**: Creates a default `.autodoc/config.yaml` if one does not already exist, pre-configured with standard defaults for Gemini models and basic source mappings.
+    - `doc_prompt.j2`: The main prompt structure.
+    - Includes a fallback mechanism to locate templates relative to the source file if package resources are unavailable (e.g., during development).
+- **Configuration**: Creates a default `.autodoc/config.yaml` if one does not exist. The default config includes:
+    - `README.md` as global context.
+    - A sample mapping for `src/**/*.py` to `docs/reference.md`.
+    - References to the extracted template paths.
+    - Default model settings using `gemini-3-flash-preview` with `high` thinking level.
 
 [source](../autodoc/commands/init.py)
 
@@ -43,15 +48,12 @@ Manually triggers the analysis and documentation update process. This is the sam
 - `repo_path` (*str*): The path to the root of the git repository. Defaults to the current directory.
 
 **Logic:**
-1.  **Change Detection**: Uses `GitHandler` to identify files changed in the most recent commit and retrieves the commit message/context.
+1.  **Change Detection**: Uses internal git utilities to identify files changed in the most recent commit and retrieves the commit message/context.
 2.  **Mapping & Routing**:
     - Evaluates changed files against the `mappings` defined in the configuration.
     - **Priority Rule**: Matches are evaluated top-to-bottom; the first mapping that matches a file's glob pattern takes ownership of that file.
-    - **Exclusions**: If a mapping defines an `exclude` list, files matching those patterns are skipped even if they match the primary `source` glob.
-    - Pattern matching follows `gitwildmatch` specifications (standard `.gitignore` style).
-3.  **Generation**: Groups source files by their target documentation file. For each target, it invokes the `DocGenerator` to synthesize the changes into the documentation.
-
-[source](../autodoc/commands/sync.py)
+    - **Exclusions**: If a mapping defines an `exclude` list, files matching those patterns are skipped for that mapping.
+3.  **Generation**: Groups source files by their target documentation file. For each target, it invokes the `DocGenerator` to synthesize the changes into the documentation using the configured Gemini model.
 
 ---
 
