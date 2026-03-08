@@ -148,3 +148,5 @@ class DocGenerator:
 # local templates
 
 # force update docs
+
+# flash lite test

@@ -43,11 +43,11 @@ mappings:
 # -----------------------------------------------------------------------------
 # Model Configuration
 # -----------------------------------------------------------------------------
-# The Gemini model to use. 
-# Recommended: gemini-3-flash-preview (Fast, Large Context)
-# Alternatives: gemini-3-pro-preview (Stronger Reasoning)
-model: "gemini-3-flash-preview"
-
+# The Gemini Model
+# To use models like gemini-2.5-pro or gemini-3.1-flash-lite-preview, just change this string:
+model: "gemini-3.1-flash-lite-preview"
+# thinking_level controls reasoning depth.
+# Allowed: "minimal", "low", "medium", "high"
 # Thinking Level (Gemini 3 Models Only)
 # Controls the depth of reasoning.
 # Options for Gemini 3 Flash: "minimal", "low", "medium", "high"
