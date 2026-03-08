@@ -146,3 +146,5 @@ class DocGenerator:
 # rel links
 # force link rewrite
 # local templates
+
+# force update docs

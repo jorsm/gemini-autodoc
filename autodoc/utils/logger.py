@@ -42,3 +42,5 @@ def setup_logger(name="autodoc"):
 # rel links
 # force link rewrite
 # local templates
+
+# force update docs

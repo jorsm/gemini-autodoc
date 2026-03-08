@@ -122,3 +122,5 @@ def _get_package_template(name: str) -> str:
 # rel links
 # force link rewrite
 # local templates
+
+# force update docs

@@ -78,3 +78,5 @@ def sync_docs(repo_path="."):
 # rel links
 # force link rewrite
 # local templates
+
+# force update docs
