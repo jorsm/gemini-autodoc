@@ -25,6 +25,7 @@ Commit Message:
 <source_code>
 {% for src in sources %}
 ### {{ src.path }}
+{% if src.relative_link %}Target Link: {{ src.relative_link }}{% endif %}
 {{ src.content }}
 {% endfor %}
 </source_code>

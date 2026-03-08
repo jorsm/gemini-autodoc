@@ -119,3 +119,4 @@ def _get_package_template(name: str) -> str:
         return f"# Error loading template: {name}"
 # trigger autodoc
 # trigger autodoc
+# rel links

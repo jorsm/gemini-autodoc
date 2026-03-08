@@ -1,4 +1,5 @@
 # Trigger Doc Update
+import os
 from pathlib import Path
 
 from jinja2 import Template
@@ -26,7 +27,10 @@ class DocGenerator:
             logger.error("Skipping Auto-Doc: Client not initialized (missing API Key?)")
             return
 
-        sources = self._read_files_with_content(source_files)
+        doc_path = Path(doc_target)
+        sources = self._read_files_with_content(
+            source_files, relative_to_dir=doc_path.parent
+        )
         if not sources:
             logger.warning(f"No valid source files found in: {source_files}")
             return
@@ -36,7 +40,6 @@ class DocGenerator:
             context_paths = self.config.context["files"]
         context_files = self._read_files_with_content(context_paths)
 
-        doc_path = Path(doc_target)
         if doc_path.exists():
             doc_content = doc_path.read_text(encoding="utf-8")
         else:
@@ -83,14 +86,22 @@ class DocGenerator:
 
         logger.info(f"✅ Updated {doc_target}")
 
-    def _read_files_with_content(self, file_paths: list) -> list:
+    def _read_files_with_content(
+        self, file_paths: list, relative_to_dir: Path = None
+    ) -> list:
         results = []
         for f in file_paths:
             path = Path(f)
             if path.exists():
-                results.append(
-                    {"path": str(path), "content": path.read_text(encoding="utf-8")}
-                )
+                data = {"path": str(path), "content": path.read_text(encoding="utf-8")}
+                if relative_to_dir:
+                    try:
+                        data["relative_link"] = os.path.relpath(
+                            path, start=relative_to_dir
+                        )
+                    except ValueError:
+                        data["relative_link"] = str(path)
+                results.append(data)
         return results
 
     def _clean_markdown_response(self, text: str) -> str:
@@ -128,5 +139,8 @@ class DocGenerator:
 
         t = Template(template_str)
         return t.render(**kwargs)
+
+
 # trigger autodoc
 # trigger autodoc
+# rel links
