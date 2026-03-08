@@ -54,18 +54,25 @@ fi
     templates_dir = Path(".autodoc/templates")
     templates_dir.mkdir(parents=True, exist_ok=True)
 
-    # A. System Instruction
-    sys_path = templates_dir / "system_instruction.j2"
-    if not sys_path.exists():
-        content = _get_package_template("system_instruction.j2")
-        sys_path.write_text(content, encoding="utf-8")
-
-    # B. Doc Prompt
-    prompt_path = templates_dir / "doc_prompt.j2"
-    if not prompt_path.exists():
-        # Map default_prompt.j2 (internal) to doc_prompt.j2 (user)
-        content = _get_package_template("default_prompt.j2")
-        prompt_path.write_text(content, encoding="utf-8")
+    try:
+        # Modern python >= 3.9
+        template_resources = importlib.resources.files("autodoc.templates")
+        for resource in template_resources.iterdir():
+            if resource.is_file() and resource.name.endswith(".j2"):
+                target_name = "doc_prompt.j2" if resource.name == "default_prompt.j2" else resource.name
+                target_path = templates_dir / target_name
+                if not target_path.exists():
+                    target_path.write_text(resource.read_text(encoding="utf-8"), encoding="utf-8")
+    except Exception as e:
+        logger.warning(f"Failed to load package templates via importlib: {e}")
+        # Fallback for dev mode
+        base_dir = Path(__file__).resolve().parent.parent / "templates"
+        if base_dir.exists():
+            for f in base_dir.glob("*.j2"):
+                target_name = "doc_prompt.j2" if f.name == "default_prompt.j2" else f.name
+                target_path = templates_dir / target_name
+                if not target_path.exists():
+                    target_path.write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
 
     # 3. Create Default Config
     config_path = Path(".autodoc/config.yaml")
@@ -102,19 +109,4 @@ thinking_level: "high"
     else:
         logger.info(f"ℹ️  Config file already exists at {config_path}")
 
-
-def _get_package_template(name: str) -> str:
-    """Retrieves content of a template file from the package source."""
-    try:
-        # Modern python >= 3.9
-        ref = importlib.resources.files("autodoc.templates") / name
-        return ref.read_text(encoding="utf-8")
-    except Exception as e:
-        logger.warning(f"Failed to load package template {name} via importlib: {e}")
-        # Fallback for dev mode
-        base_dir = Path(__file__).resolve().parent.parent / "templates"
-        template_path = base_dir / name
-        if template_path.exists():
-            return template_path.read_text(encoding="utf-8")
-        return f"# Error loading template: {name}"
 
